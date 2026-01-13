@@ -35,6 +35,13 @@ public class GameView extends View {
     private float cellGap; // space between cells
     private float cellPadding;
 
+    private float slotRadius;
+    private float blockRadius;
+    private float boardRadius;
+
+    private float gridMargin;
+
+
     private float slotGap;
 
 
@@ -152,7 +159,6 @@ public class GameView extends View {
 
         super.onDraw(canvas);
 
-        cellSize = getWidth() / cols;
 
 
         drawBoard(canvas);
@@ -195,7 +201,7 @@ public class GameView extends View {
 
     private void drawFilledCells(Canvas canvas) {
 
-        float radius = cellSize * 0.15f;
+        float radius = blockRadius;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -206,10 +212,11 @@ public class GameView extends View {
                             ? highlightColor
                             : gridFillColor;
 
-                    float left = j * cellSize + slotGap;
-                    float top = i * cellSize + slotGap;
-                    float right = (j + 1) * cellSize - slotGap;
-                    float bottom = (i + 1) * cellSize - slotGap;
+                    float left   = gridMargin + j * cellSize + slotGap;
+                    float top    = gridMargin + i * cellSize + slotGap;
+                    float right  = gridMargin + (j + 1) * cellSize - slotGap;
+                    float bottom = gridMargin + (i + 1) * cellSize - slotGap;
+
 
 
                     // Gradient (3D effect)
@@ -240,7 +247,8 @@ public class GameView extends View {
     private void drawSingleBlock(Canvas canvas, Block block) {
 
         float padding = cellSize * 0.08f;
-        float radius = cellSize * 0.15f;
+        float radius = blockRadius;
+
 
         for (int i = 0; i < block.shape.length; i++) {
             for (int j = 0; j < block.shape[0].length; j++) {
@@ -293,8 +301,9 @@ public class GameView extends View {
 
             case MotionEvent.ACTION_MOVE:
                 if (draggingBlock != null) {
-                    draggingBlock.x = event.getX() - cellSize;
-                    draggingBlock.y = event.getY() - cellSize;
+                    draggingBlock.x = event.getX() - (cellSize / 2f);
+                    draggingBlock.y = event.getY() - (cellSize / 2f);
+
                     invalidate();
                 }
                 break;
@@ -312,8 +321,9 @@ public class GameView extends View {
 
 
     private void placeBlock(com.example.blockpuzzlegame.Block block) {
-        int col = Math.round(block.x / cellSize);
-        int row = Math.round(block.y / cellSize);
+        int col = Math.round((block.x - gridMargin) / cellSize);
+        int row = Math.round((block.y - gridMargin) / cellSize);
+
 
         if (canPlace(block, row, col)) {
             for (int i = 0; i < block.shape.length; i++) {
@@ -560,54 +570,67 @@ public class GameView extends View {
         floatingTexts.add(ft);
     }
 
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        cellSize = w / cols;
+        gridMargin = w * 0.06f; // 6% margin on left & right
+
+        cellSize = (int) ((w - 2 * gridMargin) / cols);
 
         slotGap = cellSize * 0.025f;
+        slotRadius = cellSize * 0.06f;
+        blockRadius = cellSize * 0.08f;
+        boardRadius = cellSize * 0.12f;
 
         floatingTextPaint.setTextSize(cellSize * 0.8f);
 
         generateBlocks();
     }
 
+
     private void drawBoard(Canvas canvas) {
 
-        float radius = cellSize * 0.18f;
+        float boardLeft = gridMargin;
+        float boardTop = gridMargin;
+        float boardRight = gridMargin + cols * cellSize;
+        float boardBottom = gridMargin + rows * cellSize;
 
-        // Draw board background
+        // Board background (container)
         canvas.drawRoundRect(
-                0,
-                0,
-                cols * cellSize,
-                rows * cellSize,
-                radius,
-                radius,
+                boardLeft,
+                boardTop,
+                boardRight,
+                boardBottom,
+                boardRadius,
+                boardRadius,
                 boardPaint
         );
 
+        // Empty slots
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
 
-                float left = j * cellSize + slotGap;
-                float top = i * cellSize + slotGap;
-                float right = (j + 1) * cellSize - slotGap;
-                float bottom = (i + 1) * cellSize - slotGap;
+                float left   = gridMargin + j * cellSize + slotGap;
+                float top    = gridMargin + i * cellSize + slotGap;
+                float right  = gridMargin + (j + 1) * cellSize - slotGap;
+                float bottom = gridMargin + (i + 1) * cellSize - slotGap;
+
 
                 canvas.drawRoundRect(
                         left,
                         top,
                         right,
                         bottom,
-                        radius,
-                        radius,
+                        slotRadius,
+                        slotRadius,
                         slotPaint
                 );
             }
         }
     }
+
 
 
     private int lighten(int color) {
