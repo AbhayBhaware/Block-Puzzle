@@ -32,6 +32,15 @@ public class GameView extends View {
     private List<FloatingText> floatingTexts = new ArrayList<>();
     private Paint floatingTextPaint;
 
+    private float cellGap; // space between cells
+    private float cellPadding;
+
+    private float slotGap;
+
+
+
+    private int emptySlotColor = Color.parseColor("#1E233A");
+
 
 
 
@@ -65,6 +74,10 @@ public class GameView extends View {
     private int[][] grid = new int[rows][cols];
 
     private Paint gridPaint, blockPaint;
+
+    private Paint boardPaint;
+    private Paint slotPaint;
+
 
     private float blockX = 100, blockY = 1200;
     private boolean dragging = false;
@@ -119,6 +132,12 @@ public class GameView extends View {
         floatingTextPaint.setFakeBoldText(true);
 
 
+        boardPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        boardPaint.setColor(Color.parseColor("#2B2E4A")); // dark board
+
+        slotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        slotPaint.setColor(Color.parseColor("#1F2238")); // empty slot
+
 
     }
 
@@ -136,7 +155,7 @@ public class GameView extends View {
         cellSize = getWidth() / cols;
 
 
-        drawGrid(canvas);
+        drawBoard(canvas);
         drawFilledCells(canvas);
         drawBlocks(canvas);
 
@@ -172,49 +191,44 @@ public class GameView extends View {
 
 
 
-    private void drawGrid(Canvas canvas) {
-        for (int i = 0; i <= rows; i++) {
-            canvas.drawLine(0, i * cellSize,
-                    cols * cellSize, i * cellSize, gridPaint);
-        }
 
-        for (int j = 0; j <= cols; j++) {
-            canvas.drawLine(j * cellSize, 0,
-                    j * cellSize, rows * cellSize, gridPaint);
-        }
-    }
 
     private void drawFilledCells(Canvas canvas) {
 
-        float radius = cellSize * 0.12f;
+        float radius = cellSize * 0.15f;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
 
                 if (grid[i][j] == 1) {
 
-                    if (highlightRows[i] || highlightCols[j]) {
-                        blockPaint.setColor(highlightColor); // completed
-                    } else {
-                        blockPaint.setColor(gridFillColor); // normal
-                    }
+                    int baseColor = (highlightRows[i] || highlightCols[j])
+                            ? highlightColor
+                            : gridFillColor;
 
-                    float left = j * cellSize;
-                    float top = i * cellSize;
+                    float left = j * cellSize + slotGap;
+                    float top = i * cellSize + slotGap;
+                    float right = (j + 1) * cellSize - slotGap;
+                    float bottom = (i + 1) * cellSize - slotGap;
 
-                    canvas.drawRoundRect(
-                            left,
-                            top,
-                            left + cellSize,
-                            top + cellSize,
-                            radius,
-                            radius,
-                            blockPaint
-                    );
+
+                    // Gradient (3D effect)
+                    blockPaint.setShader(new android.graphics.LinearGradient(
+                            left, top,
+                            left, bottom,
+                            lighten(baseColor),
+                            darken(baseColor),
+                            android.graphics.Shader.TileMode.CLAMP
+                    ));
+
+                    canvas.drawRoundRect(left, top, right, bottom, radius, radius, blockPaint);
+
+                    blockPaint.setShader(null);
                 }
             }
         }
     }
+
 
 
     private void drawBlocks(Canvas canvas) {
@@ -224,33 +238,36 @@ public class GameView extends View {
     }
 
     private void drawSingleBlock(Canvas canvas, Block block) {
-        blockPaint.setColor(block.color);
 
-        float radius = cellSize * 0.12f; // subtle rounding
-
+        float padding = cellSize * 0.08f;
+        float radius = cellSize * 0.15f;
 
         for (int i = 0; i < block.shape.length; i++) {
             for (int j = 0; j < block.shape[0].length; j++) {
 
                 if (block.shape[i][j] == 1) {
-                    float left = block.x + j * cellSize;
-                    float top = block.y + i * cellSize;
-                    float right = left + cellSize;
-                    float bottom = top + cellSize;
 
-                    canvas.drawRoundRect(
-                            left,
-                            top,
-                            right,
-                            bottom,
-                            radius,
-                            radius,
-                            blockPaint
-                    );
+                    float left = block.x + j * cellSize + slotGap;
+                    float top = block.y + i * cellSize + slotGap;
+                    float right = left + cellSize - slotGap * 2;
+                    float bottom = top + cellSize - slotGap * 2;
+
+
+                    blockPaint.setShader(new android.graphics.LinearGradient(
+                            left, top,
+                            left, bottom,
+                            lighten(block.color),
+                            darken(block.color),
+                            android.graphics.Shader.TileMode.CLAMP
+                    ));
+
+                    canvas.drawRoundRect(left, top, right, bottom, radius, radius, blockPaint);
+                    blockPaint.setShader(null);
                 }
             }
         }
     }
+
 
 
 
@@ -549,10 +566,99 @@ public class GameView extends View {
 
         cellSize = w / cols;
 
+        slotGap = cellSize * 0.025f;
+
         floatingTextPaint.setTextSize(cellSize * 0.8f);
 
         generateBlocks();
     }
+
+    private void drawBoard(Canvas canvas) {
+
+        float radius = cellSize * 0.18f;
+
+        // Draw board background
+        canvas.drawRoundRect(
+                0,
+                0,
+                cols * cellSize,
+                rows * cellSize,
+                radius,
+                radius,
+                boardPaint
+        );
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+
+                float left = j * cellSize + slotGap;
+                float top = i * cellSize + slotGap;
+                float right = (j + 1) * cellSize - slotGap;
+                float bottom = (i + 1) * cellSize - slotGap;
+
+                canvas.drawRoundRect(
+                        left,
+                        top,
+                        right,
+                        bottom,
+                        radius,
+                        radius,
+                        slotPaint
+                );
+            }
+        }
+    }
+
+
+    private int lighten(int color) {
+        return Color.argb(
+                Color.alpha(color),
+                Math.min(255, (int)(Color.red(color) * 1.2)),
+                Math.min(255, (int)(Color.green(color) * 1.2)),
+                Math.min(255, (int)(Color.blue(color) * 1.2))
+        );
+    }
+
+    private int darken(int color) {
+        return Color.argb(
+                Color.alpha(color),
+                (int)(Color.red(color) * 0.8),
+                (int)(Color.green(color) * 0.8),
+                (int)(Color.blue(color) * 0.8)
+        );
+    }
+
+
+    /*private void drawEmptySlots(Canvas canvas) {
+
+        float padding = cellPadding;              // SAME padding
+        float radius = cellSize * 0.18f;           // slightly rounded
+
+        Paint emptyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        emptyPaint.setColor(emptySlotColor);
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+
+                float left = j * cellSize + padding;
+                float top = i * cellSize + padding;
+                float right = left + cellSize - padding * 2;
+                float bottom = top + cellSize - padding * 2;
+
+                canvas.drawRoundRect(
+                        left,
+                        top,
+                        right,
+                        bottom,
+                        radius,
+                        radius,
+                        emptyPaint
+                );
+            }
+        }
+    }*/
+
+
 
 
 
