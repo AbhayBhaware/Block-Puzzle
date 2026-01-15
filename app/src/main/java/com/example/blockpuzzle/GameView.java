@@ -39,6 +39,9 @@ public class GameView extends View {
     private float blockRadius;
     private float boardRadius;
 
+    private float dragOffsetY;
+
+
     private float gridMargin;
 
 
@@ -80,7 +83,12 @@ public class GameView extends View {
     private int cellSize;
     private int[][] grid = new int[rows][cols];
 
+    private static final int EMPTY = -1;
+
+
     private Paint gridPaint, blockPaint;
+
+    private Paint boardBorderPaint;
 
     private Paint boardPaint;
     private Paint slotPaint;
@@ -118,6 +126,8 @@ public class GameView extends View {
     public GameView(Context context) {
         super(context);
         init();
+
+
     }
 
     private void init() {
@@ -142,8 +152,21 @@ public class GameView extends View {
         boardPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         boardPaint.setColor(Color.parseColor("#2B2E4A")); // dark board
 
+        boardBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        boardBorderPaint.setStyle(Paint.Style.STROKE);
+        boardBorderPaint.setStrokeWidth(getResources().getDisplayMetrics().density * 6);
+        boardBorderPaint.setColor(Color.parseColor("#0097A7")); // border color
+
+
         slotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         slotPaint.setColor(Color.parseColor("#1F2238")); // empty slot
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                grid[i][j] = EMPTY;
+            }
+        }
+
 
 
     }
@@ -206,11 +229,12 @@ public class GameView extends View {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
 
-                if (grid[i][j] == 1) {
+                if (grid[i][j] != EMPTY) {
 
                     int baseColor = (highlightRows[i] || highlightCols[j])
                             ? highlightColor
-                            : gridFillColor;
+                            : grid[i][j];
+
 
                     float left   = gridMargin + j * cellSize + slotGap;
                     float top    = gridMargin + i * cellSize + slotGap;
@@ -246,9 +270,15 @@ public class GameView extends View {
 
     private void drawSingleBlock(Canvas canvas, Block block) {
 
-        float padding = cellSize * 0.08f;
         float radius = blockRadius;
 
+        canvas.save();
+
+        // ⭐ scale around block center
+        float centerX = block.x + (block.getWidth() * cellSize) / 2f;
+        float centerY = block.y + (block.getHeight() * cellSize) / 2f;
+
+        canvas.scale(block.scale, block.scale, centerX, centerY);
 
         for (int i = 0; i < block.shape.length; i++) {
             for (int j = 0; j < block.shape[0].length; j++) {
@@ -259,7 +289,6 @@ public class GameView extends View {
                     float top = block.y + i * cellSize + slotGap;
                     float right = left + cellSize - slotGap * 2;
                     float bottom = top + cellSize - slotGap * 2;
-
 
                     blockPaint.setShader(new android.graphics.LinearGradient(
                             left, top,
@@ -274,7 +303,10 @@ public class GameView extends View {
                 }
             }
         }
+
+        canvas.restore();
     }
+
 
 
 
@@ -291,18 +323,34 @@ public class GameView extends View {
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
-                for (com.example.blockpuzzlegame.Block block : availableBlocks) {
+                for (Block block : availableBlocks) {
                     if (isTouchInsideBlock(event, block)) {
+
+
                         draggingBlock = block;
+
+                        block.startX = block.x;
+                        block.startY = block.y;
+
+
+                        //  enlarge and lift when picked
+                        dragOffsetY = cellSize * 4f;
+
+                        block.scale = 1f;
+                        block.targetScale = 1f;
+
+
                         break;
                     }
                 }
                 break;
 
+
             case MotionEvent.ACTION_MOVE:
                 if (draggingBlock != null) {
                     draggingBlock.x = event.getX() - (cellSize / 2f);
-                    draggingBlock.y = event.getY() - (cellSize / 2f);
+                    draggingBlock.y = event.getY() - dragOffsetY;
+
 
                     invalidate();
                 }
@@ -329,7 +377,7 @@ public class GameView extends View {
             for (int i = 0; i < block.shape.length; i++) {
                 for (int j = 0; j < block.shape[0].length; j++) {
                     if (block.shape[i][j] == 1) {
-                        grid[row + i][col + j] = 1;
+                        grid[row + i][col + j] = block.color;
                     }
                 }
             }
@@ -339,8 +387,17 @@ public class GameView extends View {
             generateBlocks(); // regenerate after placing
         }
         else {
-            soundManager.playDrop();   //  Invalid placement
+            block.x = block.startX;
+            block.y = block.startY;
+
+            //  shrink back to tray size
+            block.scale = 0.6f;
+            block.targetScale = 0.6f;
+
+            soundManager.playDrop();
         }
+
+
 
 
         if (!canAnyBlockFit()) {
@@ -366,8 +423,9 @@ public class GameView extends View {
                     if (r < 0 || r >= rows || c < 0 || c >= cols)
                         return false;
 
-                    if (grid[r][c] == 1)
+                    if (grid[r][c] != EMPTY)
                         return false;
+
                 }
             }
         }
@@ -377,6 +435,11 @@ public class GameView extends View {
 
 
     private void generateBlocks() {
+
+        float spacing = cellSize * 0.4f; // smaller & natural gap
+        float startY = gridMargin + rows * cellSize + (cellSize * 2f);
+
+        //  Create blocks first
         for (int i = 0; i < 3; i++) {
             int shapeIndex = (int) (Math.random() * blockShapes.length);
             int colorIndex = (int) (Math.random() * colors.length);
@@ -385,11 +448,44 @@ public class GameView extends View {
                     blockShapes[shapeIndex],
                     colors[colorIndex]
             );
-
-            availableBlocks[i].x = 100 + i * 300;
-            availableBlocks[i].y = getHeight() - 300;
         }
+
+        //  Calculate total width using REAL block sizes
+        float totalWidth = 0;
+        for (int i = 0; i < 3; i++) {
+            totalWidth += availableBlocks[i].getWidth() * cellSize;
+            if (i < 2) totalWidth += spacing;
+        }
+
+        //  Center horizontally
+        float startX = (getWidth() - totalWidth) / 2f;
+
+
+        // Position blocks (BOTTOM ALIGNED)
+        float currentX = startX;
+
+        for (int i = 0; i < 3; i++) {
+
+            Block block = availableBlocks[i];
+
+            block.scale = 0.6f;
+            block.targetScale = 0.6f;
+
+            block.x = currentX;
+
+            // ⭐ KEY FIX: align by bottom
+            float blockHeight = block.getHeight() * cellSize * block.scale;
+            block.y = startY - blockHeight;
+
+            // save original position (for snap-back)
+            block.startX = block.x;
+            block.startY = block.y;
+
+            currentX += block.getWidth() * cellSize + spacing;
+        }
+
     }
+
 
 
     private boolean isTouchInsideBlock(MotionEvent e, com.example.blockpuzzlegame.Block block) {
@@ -411,7 +507,8 @@ public class GameView extends View {
         for (int i = 0; i < rows; i++) {
             boolean full = true;
             for (int j = 0; j < cols; j++) {
-                if (grid[i][j] == 0) {
+                if (grid[i][j] == EMPTY)
+                {
                     full = false;
                     break;
                 }
@@ -423,7 +520,8 @@ public class GameView extends View {
         for (int j = 0; j < cols; j++) {
             boolean full = true;
             for (int i = 0; i < rows; i++) {
-                if (grid[i][j] == 0) {
+                if (grid[i][j] == EMPTY)
+                {
                     full = false;
                     break;
                 }
@@ -522,14 +620,16 @@ public class GameView extends View {
 
         for (int i = 0; i < rows; i++) {
             if (highlightRows[i]) {
-                for (int j = 0; j < cols; j++) grid[i][j] = 0;
+                for (int j = 0; j < cols; j++) grid[i][j] = EMPTY;
+
                 cleared++;
             }
         }
 
         for (int j = 0; j < cols; j++) {
             if (highlightCols[j]) {
-                for (int i = 0; i < rows; i++) grid[i][j] = 0;
+                for (int i = 0; i < rows; i++) grid[i][j] = EMPTY;
+
                 cleared++;
             }
         }
@@ -606,6 +706,16 @@ public class GameView extends View {
                 boardRadius,
                 boardRadius,
                 boardPaint
+        );
+
+        canvas.drawRoundRect(
+                boardLeft,
+                boardTop,
+                boardRight,
+                boardBottom,
+                boardRadius,
+                boardRadius,
+                boardBorderPaint
         );
 
         // Empty slots
