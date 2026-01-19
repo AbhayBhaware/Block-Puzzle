@@ -35,6 +35,10 @@ public class GameView extends View {
     private float cellGap; // space between cells
     private float cellPadding;
 
+    private int comboCount = 0;
+    private static final int MAX_COMBO = 5;
+
+
     private float slotRadius;
     private float blockRadius;
     private float boardRadius;
@@ -50,6 +54,10 @@ public class GameView extends View {
 
 
     private int emptySlotColor = Color.parseColor("#1E233A");
+
+    ArrayList<Particle> particles = new ArrayList<>();
+    Paint particlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
 
 
 
@@ -197,23 +205,70 @@ public class GameView extends View {
             FloatingText ft = iterator.next();
             long elapsed = now - ft.startTime;
 
-            if (elapsed > 800) {
+            if (elapsed > ft.duration) {
                 iterator.remove();
                 continue;
             }
 
-            float progress = elapsed / 800f;
+            float progress = (float) elapsed / ft.duration;
 
-            float currentY = ft.y - (progress * cellSize);
+
+            float currentX = ft.startX + (ft.targetX - ft.startX) * progress;
+            float currentY = ft.startY + (ft.targetY - ft.startY) * progress;
+
+// fade
             int alpha = (int) (255 * (1 - progress));
-
-            floatingTextPaint.setColor(ft.color);
             floatingTextPaint.setAlpha(alpha);
 
-            canvas.drawText(ft.text, ft.x, currentY, floatingTextPaint);
+// shrink slightly
+            float scale = 1f - (0.4f * progress);
+
+            canvas.save();
+            canvas.scale(scale, scale, currentX, currentY);
+
+            floatingTextPaint.setColor(ft.color);
+            canvas.drawText(ft.text, currentX, currentY, floatingTextPaint);
+
+            canvas.restore();
+
+        }
+
+        if (!floatingTexts.isEmpty()) {
+            postInvalidateOnAnimation();
         }
 
 
+        //  DRAW PARTICLES
+        long nowParticles = System.currentTimeMillis();
+        Iterator<Particle> particleIterator = particles.iterator();
+
+        while (particleIterator.hasNext()) {
+            Particle p = particleIterator.next();
+
+            float elapsed = nowParticles - p.startTime;
+            if (elapsed > p.lifetime) {
+                particleIterator.remove();
+                continue;
+            }
+
+            float progress = elapsed / p.lifetime;
+
+            // move
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // fade out
+            int alpha = (int) (255 * (1 - progress));
+            particlePaint.setAlpha(alpha);
+            particlePaint.setColor(p.color);
+
+            canvas.drawCircle(p.x, p.y, p.radius, particlePaint);
+        }
+
+// keep animation alive
+        if (!particles.isEmpty()) {
+            postInvalidateOnAnimation();
+        }
 
 
     }
@@ -263,10 +318,12 @@ public class GameView extends View {
 
 
     private void drawBlocks(Canvas canvas) {
-        for (com.example.blockpuzzlegame.Block block : availableBlocks) {
+        for (Block block : availableBlocks) {
+            if (block.isUsed) continue;
             drawSingleBlock(canvas, block);
         }
     }
+
 
     private void drawSingleBlock(Canvas canvas, Block block) {
 
@@ -324,25 +381,22 @@ public class GameView extends View {
 
             case MotionEvent.ACTION_DOWN:
                 for (Block block : availableBlocks) {
+                    if (block.isUsed) continue;
+
                     if (isTouchInsideBlock(event, block)) {
-
-
                         draggingBlock = block;
 
                         block.startX = block.x;
                         block.startY = block.y;
 
-
-                        //  enlarge and lift when picked
                         dragOffsetY = cellSize * 4f;
-
                         block.scale = 1f;
                         block.targetScale = 1f;
-
 
                         break;
                     }
                 }
+
                 break;
 
 
@@ -382,9 +436,15 @@ public class GameView extends View {
                 }
             }
 
+            block.isUsed = true;
+
             soundManager.playPlace();
             clearCompletedLines();
-            generateBlocks(); // regenerate after placing
+           // generateBlocks();
+
+            if (allBlocksUsed()) {
+                generateBlocks();
+            }
         }
         else {
             block.x = block.startX;
@@ -411,6 +471,16 @@ public class GameView extends View {
         animatePlacement();
 
     }
+
+    private boolean allBlocksUsed() {
+        for (Block block : availableBlocks) {
+            if (!block.isUsed) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     private boolean canPlace(com.example.blockpuzzlegame.Block block, int row, int col) {
         for (int i = 0; i < block.shape.length; i++) {
@@ -448,6 +518,7 @@ public class GameView extends View {
                     blockShapes[shapeIndex],
                     colors[colorIndex]
             );
+            availableBlocks[i].isUsed = false;
         }
 
         //  Calculate total width using REAL block sizes
@@ -551,18 +622,37 @@ public class GameView extends View {
         // Score logic
         if (clearedLines > 0) {
 
-            int gainedScore = clearedLines * 10;
+            comboCount++;
+            if (comboCount > MAX_COMBO) comboCount = MAX_COMBO;
+
+            int multiplier = comboCount;
+            int gainedScore = clearedLines * 10 * multiplier;
 
             soundManager.playClear();
 
             score += gainedScore;
 
-            showFloatingScore(gainedScore); // ⭐ ADD THIS
+            if (comboCount > 1) {
+                showComboText(comboCount);
+
+                postDelayed(() -> {
+                    showScoreText(gainedScore);
+                    invalidate();
+                }, 200); // slight delay after combo text
+            } else {
+                showScoreText(gainedScore);
+            }
+
 
             if (scoreListener != null) {
                 scoreListener.onScoreChanged(score);
             }
         }
+        else {
+            //  No clear → combo reset
+            comboCount = 0;
+        }
+
 
 
         clearAlpha = 100;
@@ -620,19 +710,29 @@ public class GameView extends View {
 
         for (int i = 0; i < rows; i++) {
             if (highlightRows[i]) {
-                for (int j = 0; j < cols; j++) grid[i][j] = EMPTY;
 
-                cleared++;
+                float cy = gridMargin + i * cellSize + cellSize / 2f;
+                float cx = gridMargin + (cols * cellSize) / 2f;
+
+                spawnParticles(cx, cy, 30, Color.CYAN);
+
+                for (int j = 0; j < cols; j++) grid[i][j] = EMPTY;
             }
         }
+
 
         for (int j = 0; j < cols; j++) {
             if (highlightCols[j]) {
-                for (int i = 0; i < rows; i++) grid[i][j] = EMPTY;
 
-                cleared++;
+                float cx = gridMargin + j * cellSize + cellSize / 2f;
+                float cy = gridMargin + (rows * cellSize) / 2f;
+
+                spawnParticles(cx, cy, 30, Color.CYAN);
+
+                for (int i = 0; i < rows; i++) grid[i][j] = EMPTY;
             }
         }
+
 
        /* if (cleared > 0) {
             score += cleared * 10;
@@ -650,26 +750,23 @@ public class GameView extends View {
     }
 
     private class FloatingText {
-        float x, y;
-        String text;
-        int alpha = 255;
-        long startTime;
+        float startX, startY;
+        float targetX, targetY;
+        float scale = 1f;
 
+        String text;
+        long startTime;
+        long duration;
         int color;
     }
 
-    private void showFloatingScore(int scoreValue) {
-
-        FloatingText ft = new FloatingText();
-
-        ft.text = "+" + scoreValue;
-        ft.x = (cols * cellSize) / 2f;
-        ft.y = (rows * cellSize) / 2f;
-        ft.startTime = System.currentTimeMillis();
-        ft.color=Color.parseColor("#FFEB3B");
-        floatingTexts.add(ft);
+    private float getScoreX() {
+        return getWidth() / 2f;
     }
 
+    private float getScoreY() {
+        return gridMargin * 0.7f; // just above board
+    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -760,6 +857,81 @@ public class GameView extends View {
                 (int)(Color.blue(color) * 0.8)
         );
     }
+
+    private void showComboText(int combo) {
+
+        FloatingText ft = new FloatingText();
+
+        ft.text = "Combo x" + combo;
+
+        ft.startX = gridMargin + (cols * cellSize) / 2f;
+        ft.startY = gridMargin + (rows * cellSize) / 2f - cellSize * 0.4f;
+
+        ft.targetX = ft.startX;
+        ft.targetY = ft.startY - cellSize * 0.5f;
+
+        ft.startTime = System.currentTimeMillis();
+        ft.duration = 350;
+        ft.color = Color.parseColor("#FF5722");
+
+        floatingTexts.add(ft);
+    }
+
+
+    private void showScoreText(int scoreValue) {
+
+        FloatingText ft = new FloatingText();
+
+        ft.text = "+" + scoreValue;
+
+        ft.startX = gridMargin + (cols * cellSize) / 2f;
+        ft.startY = gridMargin + (rows * cellSize) / 2f + cellSize * 0.3f;
+
+        ft.targetX = getScoreX();
+        ft.targetY = getScoreY();
+
+        ft.startTime = System.currentTimeMillis();
+        ft.duration = 700;
+        ft.color = Color.parseColor("#FFEB3B");
+
+        floatingTexts.add(ft);
+    }
+
+    class Particle {
+        float x, y;
+        float vx, vy;
+        float radius;
+        int color;
+        long startTime;
+        long lifetime = 600; // ms
+    }
+
+    private void spawnParticles(float cx, float cy, int count, int color) {
+
+        for (int i = 0; i < count; i++) {
+            Particle p = new Particle();
+
+            p.x = cx;
+            p.y = cy;
+
+            float angle = (float) (Math.random() * 2 * Math.PI);
+            float speed = 6f + (float) Math.random() * 6f;
+
+            p.vx = (float) Math.cos(angle) * speed;
+            p.vy = (float) Math.sin(angle) * speed;
+
+            p.radius = 6f + (float) Math.random() * 4f;
+            p.color = color;
+            p.startTime = System.currentTimeMillis();
+
+            particles.add(p);
+        }
+    }
+
+
+
+
+
 
 
     /*private void drawEmptySlots(Canvas canvas) {

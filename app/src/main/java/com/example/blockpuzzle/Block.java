@@ -13,6 +13,9 @@ public class Block {
     public float scale = 0.6f;
     public float targetScale = 0.6f;
 
+    public boolean isUsed = false;
+
+
     public Block(int[][] shape, int color) {
         this.shape = shape;
         this.color = color;
