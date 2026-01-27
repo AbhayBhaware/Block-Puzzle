@@ -51,6 +51,9 @@ public class GameView extends View {
 
     private float slotGap;
 
+    private List<int[]> lastPlacedCells = new ArrayList<>();
+
+
 
 
     private int emptySlotColor = Color.parseColor("#1E233A");
@@ -62,14 +65,39 @@ public class GameView extends View {
 
 
 
-    private int[][][] blockShapes = {
-            {{1}},                     // single
-            {{1, 1}},                  // horizontal 2
-            {{1}, {1}},                // vertical 2
-            {{1, 1}, {1, 1}},           // square
-            {{1, 1, 1}},                // horizontal 3
-            {{1}, {1}, {1}}             // vertical 3
+    private int[][][] easyShapes = {
+
+            {{1}},
+            {{1, 1}},
+            {{1}, {1}},
+            {{1, 1}, {1, 1}},
+            {{1, 1, 1}},
+            {{1}, {1}, {1}},
     };
+
+    private int[][][] mediumShapes = {
+
+            {{1, 0},
+                    {1, 0},
+                    {1, 1}},
+            {{1, 1},
+                    {1, 0},
+                    {1, 0}},
+
+            {{0, 1},
+                    {0, 1},
+                    {1, 1}},
+            {{1, 1},
+                    {0, 1},
+                    {0, 1}},
+
+            {{0, 1, 0},
+                    {1, 1, 1}},
+
+            {{1, 1, 1},
+                    {0, 1, 0}}
+    };
+
 
 
     private int[] colors = {
@@ -428,10 +456,18 @@ public class GameView extends View {
 
 
         if (canPlace(block, row, col)) {
+
+            lastPlacedCells.clear();
             for (int i = 0; i < block.shape.length; i++) {
                 for (int j = 0; j < block.shape[0].length; j++) {
                     if (block.shape[i][j] == 1) {
                         grid[row + i][col + j] = block.color;
+
+                        int r = row + i;
+                        int c = col + j;
+
+                        lastPlacedCells.add(new int[]{r, c});
+
                     }
                 }
             }
@@ -511,15 +547,19 @@ public class GameView extends View {
 
         //  Create blocks first
         for (int i = 0; i < 3; i++) {
-            int shapeIndex = (int) (Math.random() * blockShapes.length);
+
+            int[][] selectedShape = getRandomShape();
+
             int colorIndex = (int) (Math.random() * colors.length);
 
             availableBlocks[i] = new Block(
-                    blockShapes[shapeIndex],
+                    selectedShape,
                     colors[colorIndex]
             );
+
             availableBlocks[i].isUsed = false;
         }
+
 
         //  Calculate total width using REAL block sizes
         float totalWidth = 0;
@@ -556,6 +596,41 @@ public class GameView extends View {
         }
 
     }
+
+    private int[][] getRandomShape() {
+
+        int emptyCells = countEmptyCells();
+
+        // If board almost full → give small shapes
+        if (emptyCells < 15) {
+            return easyShapes[(int)(Math.random() * 3)];
+        }
+
+        // Difficulty based on score
+        if (score < 200) {
+            return easyShapes[(int)(Math.random() * easyShapes.length)];
+        }
+
+        if (score < 500) {
+            int total = easyShapes.length + mediumShapes.length;
+            int rand = (int)(Math.random() * total);
+
+            if (rand < easyShapes.length)
+                return easyShapes[rand];
+            else
+                return mediumShapes[rand - easyShapes.length];
+        }
+
+        // 500+ score → allow all shapes
+        int total = easyShapes.length + mediumShapes.length;
+        int rand = (int)(Math.random() * total);
+
+        if (rand < easyShapes.length)
+            return easyShapes[rand];
+        else
+            return mediumShapes[rand - easyShapes.length];
+    }
+
 
 
 
@@ -667,19 +742,24 @@ public class GameView extends View {
 
     private boolean canAnyBlockFit() {
 
-        for (com.example.blockpuzzlegame.Block block : availableBlocks) {
+        for (Block block : availableBlocks) {
+
+            //  IMPORTANT: skip already used blocks
+            if (block.isUsed) continue;
 
             for (int row = 0; row < rows; row++) {
                 for (int col = 0; col < cols; col++) {
 
                     if (canPlace(block, row, col)) {
-                        return true; // At least one move exists
+                        return true; // at least one move exists
                     }
                 }
             }
         }
-        return false; // No move possible
+
+        return false; // no remaining block can fit
     }
+
 
 
     public interface GameOverListener {
@@ -711,10 +791,15 @@ public class GameView extends View {
         for (int i = 0; i < rows; i++) {
             if (highlightRows[i]) {
 
-                float cy = gridMargin + i * cellSize + cellSize / 2f;
-                float cx = gridMargin + (cols * cellSize) / 2f;
+                for (int[] cell : lastPlacedCells) {
+                    if (cell[0] == i) { // same row
 
-                spawnParticles(cx, cy, 30, Color.CYAN);
+                        float cx = gridMargin + cell[1] * cellSize + cellSize / 2f;
+                        float cy = gridMargin + cell[0] * cellSize + cellSize / 2f;
+
+                        spawnParticles(cx, cy, 25, Color.CYAN);
+                    }
+                }
 
                 for (int j = 0; j < cols; j++) grid[i][j] = EMPTY;
             }
@@ -724,14 +809,20 @@ public class GameView extends View {
         for (int j = 0; j < cols; j++) {
             if (highlightCols[j]) {
 
-                float cx = gridMargin + j * cellSize + cellSize / 2f;
-                float cy = gridMargin + (rows * cellSize) / 2f;
+                for (int[] cell : lastPlacedCells) {
+                    if (cell[1] == j) { // same column
 
-                spawnParticles(cx, cy, 30, Color.CYAN);
+                        float cx = gridMargin + cell[1] * cellSize + cellSize / 2f;
+                        float cy = gridMargin + cell[0] * cellSize + cellSize / 2f;
+
+                        spawnParticles(cx, cy, 25, Color.CYAN);
+                    }
+                }
 
                 for (int i = 0; i < rows; i++) grid[i][j] = EMPTY;
             }
         }
+
 
 
        /* if (cleared > 0) {
@@ -927,6 +1018,18 @@ public class GameView extends View {
             particles.add(p);
         }
     }
+
+    private int countEmptyCells() {
+        int empty = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == EMPTY) empty++;
+            }
+        }
+        return empty;
+    }
+
 
 
 
