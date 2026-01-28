@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#7DBAEA"
+    android:gravity="center"
     tools:context=".HomeActivity">
 
    <LinearLayout
@@ -14,10 +15,10 @@
        android:orientation="vertical"
        android:padding="10dp">
 
-      <de.hdodenhof.circleimageview.CircleImageView
-          android:layout_width="200dp"
-          android:layout_height="200dp"
-         android:src="@drawable/logo2"
+      <ImageView
+          android:layout_width="190dp"
+          android:layout_height="100dp"
+         android:src="@drawable/logo3"
          android:layout_gravity="center"/>
 
       <LinearLayout
@@ -35,7 +36,7 @@
          app:cardElevation="6dp"
          android:padding="5dp"
           android:layout_margin="10dp"
-          app:cardBackgroundColor="#0E6FBD">
+          app:cardBackgroundColor="#1E3A8A">
 
          <TextView
              android:layout_width="wrap_content"
@@ -60,7 +61,7 @@
           app:cardElevation="6dp"
           android:padding="5dp"
           android:layout_margin="10dp"
-          app:cardBackgroundColor="#0E6FBD">
+          app:cardBackgroundColor="#1E3A8A">
 
          <TextView
              android:layout_width="wrap_content"
@@ -111,6 +112,7 @@
       </androidx.cardview.widget.CardView>
 
       <androidx.cardview.widget.CardView
+          android:id="@+id/levelbtn"
           android:layout_width="150dp"
           android:layout_height="60dp"
           app:cardElevation="6dp"
@@ -141,6 +143,7 @@
       </androidx.cardview.widget.CardView>
 
       <androidx.cardview.widget.CardView
+          android:id="@+id/settingbtn"
           android:layout_width="150dp"
           android:layout_height="60dp"
           app:cardElevation="6dp"

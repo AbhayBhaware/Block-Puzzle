@@ -2,18 +2,71 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#7DBAEA">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/highScoreText"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="#1E3A8A"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3848"
+            android:drawableLeft="@drawable/baseline_military_tech_24"
+            android:textSize="20dp"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:layout_gravity="center"
+            />
+
+    </androidx.cardview.widget.CardView>
+
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/menuButton"
+        android:layout_width="70dp"
+        android:layout_height="40dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="6dp"
+        app:cardBackgroundColor="#1E3A8A"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/menubtn"
+            android:layout_gravity="center"/>
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Score: 0"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@color/white"
+        android:layout_below="@id/highScoreText"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="12dp"/>
+
 
     <com.example.blockpuzzle.GameView
         android:id="@+id/gameView"
