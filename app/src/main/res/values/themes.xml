@@ -3,6 +3,7 @@
     <style name="Base.Theme.BlockPuzzle" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">#7DBAEA</item>
     </style>
 
     <style name="Theme.BlockPuzzle" parent="Base.Theme.BlockPuzzle" />

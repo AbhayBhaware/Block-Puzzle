@@ -21,6 +21,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setNavigationBarColor(Color.parseColor("#7DBAEA"));
         setContentView(R.layout.activity_home);
 
         classicbtn=findViewById(R.id.classicbtn);
@@ -47,7 +48,7 @@ public class HomeActivity extends AppCompatActivity {
                         popupView,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
-                        true
+                        false
                 );
 
                 popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -56,6 +57,10 @@ public class HomeActivity extends AppCompatActivity {
                 dimBackground.setAlpha(0f);
                 dimBackground.setVisibility(View.VISIBLE);
                 dimBackground.animate().alpha(1f).setDuration(200);
+
+                dimBackground.setOnClickListener(view -> {
+                    // Do nothing – just block outside touches
+                });
 
                 int xoffset=(int)(getResources().getDisplayMetrics().density * -75);
                 popupWindow.showAtLocation(
@@ -89,10 +94,7 @@ public class HomeActivity extends AppCompatActivity {
                     {
                         Toast.makeText(HomeActivity.this, "rate us clicked", Toast.LENGTH_SHORT).show();
                     }
-                    popupWindow.dismiss();
 
-                    dimBackground.animate().alpha(0f).setDuration(200)
-                            .withEndAction(() -> dimBackground.setVisibility(View.GONE));
                 };
                 popupView.findViewById(R.id.musiclinearlayout).setOnClickListener(menuClickListner);
                 popupView.findViewById(R.id.soundlinearlayout).setOnClickListener(menuClickListner);

@@ -26,6 +26,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        );
+
         setContentView(R.layout.activity_main);
 
         gameView = findViewById(R.id.gameView);
@@ -71,15 +77,23 @@ public class MainActivity extends AppCompatActivity {
                         popupView,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
-                        true
+                        false
                 );
 
                 popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 popupWindow.setElevation(10);
 
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+
+
         dimBackground.setAlpha(0f);
         dimBackground.setVisibility(View.VISIBLE);
         dimBackground.animate().alpha(1f).setDuration(200);
+
+        dimBackground.setOnClickListener(view -> {
+            // Do nothing – just block outside touches
+        });
 
                 int xoffset=(int)(getResources().getDisplayMetrics().density * -75);
                 popupWindow.showAtLocation(
@@ -112,10 +126,6 @@ public class MainActivity extends AppCompatActivity {
                     {
                         Toast.makeText(MainActivity.this, "Restart clicked", Toast.LENGTH_SHORT).show();
                     }
-                    popupWindow.dismiss();
-
-                    dimBackground.animate().alpha(0f).setDuration(200)
-                            .withEndAction(() -> dimBackground.setVisibility(View.GONE));
 
                 };
                 popupView.findViewById(R.id.musiclinearlayout).setOnClickListener(menuClickListner);
