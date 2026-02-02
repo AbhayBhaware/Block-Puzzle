@@ -16,6 +16,8 @@ import android.widget.Toast;
 public class HomeActivity extends AppCompatActivity {
 
     CardView classicbtn, settingbtn, levelbtn;
+
+    View dimBackground;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +26,7 @@ public class HomeActivity extends AppCompatActivity {
         classicbtn=findViewById(R.id.classicbtn);
         settingbtn=findViewById(R.id.settingbtn);
         levelbtn=findViewById(R.id.levelbtn);
+        dimBackground=findViewById(R.id.dimBackground);
 
         classicbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +53,10 @@ public class HomeActivity extends AppCompatActivity {
                 popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 popupWindow.setElevation(10);
 
+                dimBackground.setAlpha(0f);
+                dimBackground.setVisibility(View.VISIBLE);
+                dimBackground.animate().alpha(1f).setDuration(200);
+
                 int xoffset=(int)(getResources().getDisplayMetrics().density * -75);
                 popupWindow.showAtLocation(
                         findViewById(android.R.id.content),
@@ -57,6 +64,14 @@ public class HomeActivity extends AppCompatActivity {
                         0,
                         0
                 );
+
+                popupView.findViewById(R.id.closeButton).setOnClickListener(view -> {
+                    popupWindow.dismiss();
+
+                    dimBackground.animate().alpha(0f).setDuration(200)
+                            .withEndAction(() -> dimBackground.setVisibility(View.GONE));
+                });
+
 
                 View.OnClickListener menuClickListner = view-> {
                     int id=view.getId();
@@ -75,6 +90,9 @@ public class HomeActivity extends AppCompatActivity {
                         Toast.makeText(HomeActivity.this, "rate us clicked", Toast.LENGTH_SHORT).show();
                     }
                     popupWindow.dismiss();
+
+                    dimBackground.animate().alpha(0f).setDuration(200)
+                            .withEndAction(() -> dimBackground.setVisibility(View.GONE));
                 };
                 popupView.findViewById(R.id.musiclinearlayout).setOnClickListener(menuClickListner);
                 popupView.findViewById(R.id.soundlinearlayout).setOnClickListener(menuClickListner);
