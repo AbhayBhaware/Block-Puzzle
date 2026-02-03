@@ -41,6 +41,7 @@
           app:cardBackgroundColor="#1E3A8A">
 
          <TextView
+             android:id="@+id/highScoreHome"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
             android:text="3848"
@@ -68,7 +69,7 @@
          <TextView
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="3848"
+             android:text="0"
              android:drawableLeft="@drawable/coinlogoo"
              android:drawablePadding="10dp"
              android:textSize="25dp"

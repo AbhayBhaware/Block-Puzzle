@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity {
@@ -18,6 +20,11 @@ public class HomeActivity extends AppCompatActivity {
     CardView classicbtn, settingbtn, levelbtn;
 
     View dimBackground;
+
+
+    private static final String PREFS_NAME = "BlockPuzzlePrefs";
+    private static final String KEY_HIGH_SCORE = "high_score";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +35,14 @@ public class HomeActivity extends AppCompatActivity {
         settingbtn=findViewById(R.id.settingbtn);
         levelbtn=findViewById(R.id.levelbtn);
         dimBackground=findViewById(R.id.dimBackground);
+
+        TextView highScoreText = findViewById(R.id.highScoreHome);
+
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int highScore = prefs.getInt(KEY_HIGH_SCORE, 0);
+
+        highScoreText.setText(String.valueOf(highScore));
+
 
         classicbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +68,8 @@ public class HomeActivity extends AppCompatActivity {
 
                 popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 popupWindow.setElevation(10);
+
+
 
                 dimBackground.setAlpha(0f);
                 dimBackground.setVisibility(View.VISIBLE);
