@@ -1,5 +1,6 @@
 package com.example.blockpuzzle;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -24,6 +25,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "BlockPuzzlePrefs";
     private static final String KEY_HIGH_SCORE = "high_score";
+    private static final String KEY_COINS = "coins";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +40,14 @@ public class HomeActivity extends AppCompatActivity {
         dimBackground=findViewById(R.id.dimBackground);
 
         TextView highScoreText = findViewById(R.id.highScoreHome);
+        TextView coinText=findViewById(R.id.coinstextHome);
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int highScore = prefs.getInt(KEY_HIGH_SCORE, 0);
+        int coins = prefs.getInt(KEY_COINS, 0);
 
         highScoreText.setText(String.valueOf(highScore));
+        coinText.setText(String.valueOf(coins));
 
 
         classicbtn.setOnClickListener(new View.OnClickListener() {
@@ -131,6 +137,23 @@ public class HomeActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int coins = prefs.getInt(KEY_COINS, 0);
+        int highScore = prefs.getInt(KEY_HIGH_SCORE, 0);
+
+        TextView coinText = findViewById(R.id.coinstextHome);
+        TextView highScoreText = findViewById(R.id.highScoreHome);
+
+        coinText.setText(String.valueOf(coins));
+        highScoreText.setText(String.valueOf(highScore));
+    }
+
+
 
     private void animateButton(View view) {
         view.animate()

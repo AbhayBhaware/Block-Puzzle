@@ -44,7 +44,7 @@
              android:id="@+id/highScoreHome"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-            android:text="3848"
+            android:text="0"
             android:drawableLeft="@drawable/baseline_military_tech_24"
             android:drawablePadding="10dp"
             android:textSize="25dp"
@@ -67,6 +67,7 @@
           app:cardBackgroundColor="#1E3A8A">
 
          <TextView
+             android:id="@+id/coinstextHome"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:text="0"

@@ -21,8 +21,9 @@
             android:id="@+id/highScoreText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3848"
+            android:text="0"
             android:drawableLeft="@drawable/baseline_military_tech_24"
+            android:drawablePadding="5dp"
             android:textSize="20dp"
             android:textStyle="bold|italic"
             android:textColor="@color/white"
@@ -33,6 +34,38 @@
 
     </androidx.cardview.widget.CardView>
 
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cointextCard"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_toEndOf="@id/highScoreTextCard"
+        android:layout_toStartOf="@id/menuButton"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="26dp"
+        android:layout_marginEnd="26dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="#1E3A8A"
+        >
+
+        <TextView
+            android:id="@+id/coinText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:drawableLeft="@drawable/coinlogoo"
+            android:drawablePadding="5dp"
+            android:textSize="20dp"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:layout_gravity="center"
+            />
+
+    </androidx.cardview.widget.CardView>
 
 
     <androidx.cardview.widget.CardView

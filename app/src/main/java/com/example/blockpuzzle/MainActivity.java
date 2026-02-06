@@ -27,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "BlockPuzzlePrefs";
     private static final String KEY_HIGH_SCORE = "high_score";
 
+    private static final String KEY_COINS = "coins";
+
+    TextView coinText;
+    int coins;
+
+
     SharedPreferences prefs;
     int highScore;
 
@@ -44,12 +50,26 @@ public class MainActivity extends AppCompatActivity {
         dimBackground = findViewById(R.id.dimBackground);
 
 
-        TextView highScoreText = findViewById(R.id.highScoreText);
+
 
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        highScore = prefs.getInt(KEY_HIGH_SCORE, 0);
+        coinText = findViewById(R.id.coinText);
+        coins = prefs.getInt(KEY_COINS, 0);
+        coinText.setText(String.valueOf(coins));
 
+
+        TextView highScoreText = findViewById(R.id.highScoreText);
+        highScore = prefs.getInt(KEY_HIGH_SCORE, 0);
         highScoreText.setText(String.valueOf(highScore));
+
+
+        gameView.setCoinListener(earnedCoins -> {
+            coins += earnedCoins;
+            coinText.setText(String.valueOf(coins));
+
+            prefs.edit().putInt(KEY_COINS, coins).apply();
+        });
+
 
 
         menubtn.setOnClickListener(new View.OnClickListener() {
@@ -61,16 +81,22 @@ public class MainActivity extends AppCompatActivity {
 
         gameView.setGameOverListener(score -> {
 
+            // Participation reward
+            coins += 5; // participation
 
             if (score > highScore) {
-                prefs.edit()
-                        .putInt(KEY_HIGH_SCORE, score)
-                        .apply();
+                highScore = score;
+                prefs.edit().putInt(KEY_HIGH_SCORE, score).apply();
 
-                highScore = score; // update local value
+                coins += 20; // bonus
+                Toast.makeText(this, "New High Score! +20 coins", Toast.LENGTH_SHORT).show();
             }
 
+            prefs.edit().putInt(KEY_COINS, coins).apply();
+            coinText.setText(String.valueOf(coins));
             highScoreText.setText(String.valueOf(highScore));
+
+
 
             new AlertDialog.Builder(this)
                     .setTitle("Game Over")

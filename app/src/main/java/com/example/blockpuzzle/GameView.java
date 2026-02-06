@@ -133,6 +133,17 @@ public class GameView extends View {
     private float blockX = 100, blockY = 1200;
     private boolean dragging = false;
 
+    public interface CoinListener {
+        void onCoinsEarned(int coins);
+    }
+
+    private CoinListener coinListener;
+
+    public void setCoinListener(CoinListener listener) {
+        this.coinListener = listener;
+    }
+
+
     public interface ScoreListener {
         void onScoreChanged(int score);
     }
@@ -693,6 +704,23 @@ public class GameView extends View {
                 clearedLines++;
             }
         }
+
+        // 🪙 Coin reward logic
+        int earnedCoins = 0;
+
+        if (clearedLines == 1) {
+            earnedCoins = 1;
+        } else if (clearedLines == 2) {
+            earnedCoins = 3;
+        } else if (clearedLines >= 3) {
+            earnedCoins = 5;
+        }
+
+        if (earnedCoins > 0 && coinListener != null) {
+            coinListener.onCoinsEarned(earnedCoins);
+        }
+
+
 
         // Score logic
         if (clearedLines > 0) {
