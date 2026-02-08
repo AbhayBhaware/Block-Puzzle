@@ -483,6 +483,16 @@ public class GameView extends View {
                 }
             }
 
+            //  Placement score based on block size
+            int placementScore = countBlockCells(block);
+            score += placementScore;
+
+// Notify UI
+            if (scoreListener != null) {
+                scoreListener.onScoreChanged(score);
+            }
+
+
             block.isUsed = true;
 
             soundManager.playPlace();
@@ -507,13 +517,16 @@ public class GameView extends View {
 
 
 
-        if (!canAnyBlockFit()) {
-            isGameOver = true;
-            soundManager.playGameOver();
-            if (gameOverListener != null) {
-                gameOverListener.onGameOver(score);
+        postDelayed(() -> {
+            if (!canAnyBlockFit()) {
+                isGameOver = true;
+                soundManager.playGameOver();
+                if (gameOverListener != null) {
+                    gameOverListener.onGameOver(score);
+                }
             }
-        }
+        }, 180);
+
 
         animatePlacement();
 
@@ -772,21 +785,24 @@ public class GameView extends View {
 
         for (Block block : availableBlocks) {
 
-            //  IMPORTANT: skip already used blocks
             if (block.isUsed) continue;
 
-            for (int row = 0; row < rows; row++) {
-                for (int col = 0; col < cols; col++) {
+            int blockHeight = block.shape.length;
+            int blockWidth = block.shape[0].length;
+
+            for (int row = 0; row <= rows - blockHeight; row++) {
+                for (int col = 0; col <= cols - blockWidth; col++) {
 
                     if (canPlace(block, row, col)) {
-                        return true; // at least one move exists
+                        return true;
                     }
                 }
             }
         }
 
-        return false; // no remaining block can fit
+        return false;
     }
+
 
 
 
@@ -1056,6 +1072,18 @@ public class GameView extends View {
             }
         }
         return empty;
+    }
+
+    private int countBlockCells(Block block) {
+        int count = 0;
+        for (int i = 0; i < block.shape.length; i++) {
+            for (int j = 0; j < block.shape[0].length; j++) {
+                if (block.shape[i][j] == 1) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
 
