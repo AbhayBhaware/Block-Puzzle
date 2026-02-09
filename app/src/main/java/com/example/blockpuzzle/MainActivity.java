@@ -32,9 +32,12 @@ public class MainActivity extends AppCompatActivity {
     TextView coinText;
     int coins;
 
-
     SharedPreferences prefs;
     int highScore;
+
+    int displayedScore = 0;
+    android.animation.ValueAnimator scoreAnimator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,21 +101,33 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            new AlertDialog.Builder(this)
-                    .setTitle("Game Over")
-                    .setMessage("Final Score: " + score)
-                    .setCancelable(false)
-                    .setPositiveButton("Restart", (d, w) -> restartGame())
-                    .show();
+            showGameOverPopup();
+
+
         });
 
 
         gameView.setScoreListener(new GameView.ScoreListener() {
             @Override
-            public void onScoreChanged(int score) {
-                scoreText.setText("Score: "+score);
+            public void onScoreChanged(int newScore) {
+
+                // Cancel previous animation if running
+                if (scoreAnimator != null && scoreAnimator.isRunning()) {
+                    scoreAnimator.cancel();
+                }
+
+                scoreAnimator = android.animation.ValueAnimator.ofInt(displayedScore, newScore);
+                scoreAnimator.setDuration(350); // smooth counting
+
+                scoreAnimator.addUpdateListener(animation -> {
+                    displayedScore = (int) animation.getAnimatedValue();
+                    scoreText.setText("Score: " + displayedScore);
+                });
+
+                scoreAnimator.start();
             }
         });
+
 
     }
 
@@ -189,5 +204,40 @@ public class MainActivity extends AppCompatActivity {
                 popupView.findViewById(R.id.restartlinearlayout).setOnClickListener(menuClickListner);
 
     }
+
+    private void showGameOverPopup() {
+
+        View popupView = getLayoutInflater().inflate(R.layout.gameover_pannel, null);
+
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                false
+        );
+
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setElevation(20);
+
+        // Dim background
+        dimBackground.setAlpha(0f);
+        dimBackground.setVisibility(View.VISIBLE);
+        dimBackground.animate().alpha(1f).setDuration(250);
+
+        popupView.findViewById(R.id.restartBtn).setOnClickListener(v -> {
+            popupWindow.dismiss();
+            dimBackground.setVisibility(View.GONE);
+            restartGame();
+        });
+
+        popupWindow.showAtLocation(
+                findViewById(android.R.id.content),
+                Gravity.CENTER,
+                0,
+                0
+        );
+    }
+
+
 
 }
