@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     int displayedScore = 0;
     android.animation.ValueAnimator scoreAnimator;
+    SoundManager soundManager;
 
 
     @Override
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         scoreText = findViewById(R.id.scoreText);
         menubtn=findViewById(R.id.menuButton);
         dimBackground = findViewById(R.id.dimBackground);
+        soundManager = new SoundManager(this);
 
 
 
@@ -218,16 +220,46 @@ public class MainActivity extends AppCompatActivity {
 
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setElevation(20);
+        popupWindow.setOutsideTouchable(false);
 
         // Dim background
         dimBackground.setAlpha(0f);
         dimBackground.setVisibility(View.VISIBLE);
         dimBackground.animate().alpha(1f).setDuration(250);
 
+        CardView continueBtn = popupView.findViewById(R.id.continuebtn);
+
         popupView.findViewById(R.id.restartBtn).setOnClickListener(v -> {
             popupWindow.dismiss();
             dimBackground.setVisibility(View.GONE);
             restartGame();
+        });
+
+        continueBtn.setOnClickListener(v -> {
+            if (coins>=200)
+            {
+                int oldCoins = coins;
+                coins -= 200;
+
+                prefs.edit().putInt(KEY_COINS, coins).apply();
+
+                animateCoins(coins);  // smooth counting
+                showCoinDeductionEffect(200); // floating -200
+                soundManager.playCoinSpend(); // coin sound
+
+
+                popupWindow.dismiss();
+                dimBackground.setVisibility(View.GONE);
+
+                gameView.resumeGame();
+
+                gameView.generateBlocks();
+
+            }
+            else
+            {
+                Toast.makeText(this, "Insufficient Coins", Toast.LENGTH_SHORT).show();
+            }
         });
 
         popupWindow.showAtLocation(
@@ -237,6 +269,54 @@ public class MainActivity extends AppCompatActivity {
                 0
         );
     }
+
+    private void showCoinDeductionEffect(int amount) {
+
+        TextView floatingText = new TextView(this);
+        floatingText.setText("-" + amount);
+        floatingText.setTextColor(Color.RED);
+        floatingText.setTextSize(18f);
+        floatingText.setTypeface(null, android.graphics.Typeface.BOLD);
+
+        // Position near coinText
+        int[] location = new int[2];
+        coinText.getLocationOnScreen(location);
+
+        floatingText.setX(location[0] + coinText.getWidth() / 2f);
+        floatingText.setY(location[1] - 20);
+
+        // Add to root layout
+        ((android.view.ViewGroup) findViewById(android.R.id.content))
+                .addView(floatingText);
+
+        // Animate upward + fade
+        floatingText.animate()
+                .translationYBy(-100f)
+                .alpha(0f)
+                .setDuration(800)
+                .withEndAction(() ->
+                        ((android.view.ViewGroup) findViewById(android.R.id.content))
+                                .removeView(floatingText)
+                )
+                .start();
+    }
+
+    private void animateCoins(int newCoins) {
+
+        android.animation.ValueAnimator animator =
+                android.animation.ValueAnimator.ofInt(coins, newCoins);
+
+        animator.setDuration(400);
+
+        animator.addUpdateListener(animation -> {
+            int animatedValue = (int) animation.getAnimatedValue();
+            coinText.setText(String.valueOf(animatedValue));
+        });
+
+        animator.start();
+    }
+
+
 
 
 

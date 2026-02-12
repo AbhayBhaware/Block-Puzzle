@@ -12,6 +12,8 @@ public class SoundManager {
     private int dropSound;
     private int clearSound;
     private int gameOverSound;
+    private int coinSpendSound;
+
 
     public SoundManager(Context context) {
 
@@ -29,6 +31,8 @@ public class SoundManager {
         dropSound = soundPool.load(context, R.raw.drop, 1);
         clearSound = soundPool.load(context, R.raw.clear, 1);
         gameOverSound = soundPool.load(context, R.raw.game_over, 1);
+        coinSpendSound = soundPool.load(context, R.raw.spend_coin, 1);
+
     }
 
     public void playPlace() {
@@ -46,6 +50,10 @@ public class SoundManager {
     public void playGameOver() {
         soundPool.play(gameOverSound, 1, 1, 0, 0, 1);
     }
+    public void playCoinSpend() {
+        soundPool.play(coinSpendSound, 1, 1, 0, 0, 1);
+    }
+
 
     public void release() {
         soundPool.release();

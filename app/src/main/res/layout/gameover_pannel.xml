@@ -42,7 +42,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="150dp"
-                android:layout_height="60dp"
+                android:layout_height="65dp"
                 app:cardElevation="6dp"
                 app:cardCornerRadius="10dp"
                 app:cardBackgroundColor="#FF8C07"
@@ -54,6 +54,13 @@
                 android:id="@+id/continuebtn"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="5dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -69,12 +76,27 @@
                     android:shadowDy="3"
                     android:shadowRadius="3"/>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="200 Coins"
+                        android:drawableLeft="@drawable/coinlogoo"
+                        android:textSize="18dp"
+                        android:textColor="@color/white"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="bold"
+                        android:drawablePadding="5dp"
+                        />
+
+
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="150dp"
-                    android:layout_height="60dp"
+                    android:layout_height="65dp"
                     app:cardElevation="6dp"
                     app:cardCornerRadius="10dp"
                     app:cardBackgroundColor="#00E676"
@@ -86,6 +108,11 @@
                     android:id="@+id/restartBtn"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -100,6 +127,19 @@
                         android:shadowDx="0"
                         android:shadowDy="3"
                         android:shadowRadius="3"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="New Game"
+                            android:textSize="18dp"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-condensed"
+                            android:textStyle="bold"
+                            android:drawablePadding="5dp"
+                            />
+
+                    </LinearLayout>
 
 
                 </androidx.cardview.widget.CardView>

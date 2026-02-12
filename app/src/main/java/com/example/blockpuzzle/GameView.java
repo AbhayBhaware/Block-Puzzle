@@ -564,7 +564,7 @@ public class GameView extends View {
 
 
 
-    private void generateBlocks() {
+    public void generateBlocks() {
 
         float spacing = cellSize * 0.4f; // smaller & natural gap
         float startY = gridMargin + rows * cellSize + (cellSize * 2f);
@@ -1085,6 +1085,13 @@ public class GameView extends View {
         }
         return count;
     }
+
+    public void resumeGame() {
+        isGameOver = false;
+        invalidate();
+    }
+
+
 
 
 
