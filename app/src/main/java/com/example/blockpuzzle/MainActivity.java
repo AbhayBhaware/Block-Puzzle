@@ -69,11 +69,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         gameView.setCoinListener(earnedCoins -> {
+
             coins += earnedCoins;
-            coinText.setText(String.valueOf(coins));
 
             prefs.edit().putInt(KEY_COINS, coins).apply();
+
+            animateCoins(coins);          // smooth counting
+            showCoinEarnEffect(earnedCoins);  // ADD THIS LINE
         });
+
 
 
 
@@ -300,11 +304,41 @@ public class MainActivity extends AppCompatActivity {
                 )
                 .start();
     }
+    private void showCoinEarnEffect(int amount) {
+
+        TextView floatingText = new TextView(this);
+        floatingText.setText("+" + amount);
+        floatingText.setTextColor(Color.parseColor("#FFD700"));
+        floatingText.setTextSize(18f);
+        floatingText.setTypeface(null, android.graphics.Typeface.BOLD);
+
+        int[] location = new int[2];
+        coinText.getLocationOnScreen(location);
+
+        floatingText.setX(location[0] + coinText.getWidth() / 2f);
+        floatingText.setY(location[1] - 20);
+
+        ((android.view.ViewGroup) findViewById(android.R.id.content))
+                .addView(floatingText);
+
+        floatingText.animate()
+                .translationYBy(-100f)
+                .alpha(0f)
+                .setDuration(800)
+                .withEndAction(() ->
+                        ((android.view.ViewGroup) findViewById(android.R.id.content))
+                                .removeView(floatingText)
+                )
+                .start();
+    }
+
 
     private void animateCoins(int newCoins) {
 
+        int startValue = Integer.parseInt(coinText.getText().toString());
+
         android.animation.ValueAnimator animator =
-                android.animation.ValueAnimator.ofInt(coins, newCoins);
+                android.animation.ValueAnimator.ofInt(startValue, newCoins);
 
         animator.setDuration(400);
 
@@ -315,6 +349,7 @@ public class MainActivity extends AppCompatActivity {
 
         animator.start();
     }
+
 
 
 

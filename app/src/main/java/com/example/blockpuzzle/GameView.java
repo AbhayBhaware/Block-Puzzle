@@ -718,20 +718,42 @@ public class GameView extends View {
             }
         }
 
-        // 🪙 Coin reward logic
+
+        //  NEW Smart Coin Logic
+
+        int clearedRows = 0;
+        int clearedCols = 0;
+
+        for (int i = 0; i < rows; i++) {
+            if (highlightRows[i]) clearedRows++;
+        }
+
+        for (int j = 0; j < cols; j++) {
+            if (highlightCols[j]) clearedCols++;
+        }
+
         int earnedCoins = 0;
 
-        if (clearedLines == 1) {
-            earnedCoins = 1;
-        } else if (clearedLines == 2) {
-            earnedCoins = 3;
-        } else if (clearedLines >= 3) {
+// Condition 1: 3 or more total lines
+        if (clearedLines >= 3) {
             earnedCoins = 5;
         }
-
-        if (earnedCoins > 0 && coinListener != null) {
-            coinListener.onCoinsEarned(earnedCoins);
+// Condition 2: At least 1 row AND 1 column cleared together
+        else if (clearedRows > 0 && clearedCols > 0) {
+            earnedCoins = 3;
         }
+
+        if (earnedCoins > 0) {
+
+            if (coinListener != null) {
+                coinListener.onCoinsEarned(earnedCoins);
+            }
+
+            soundManager.playCoinEarn();
+        }
+
+
+
 
 
 
@@ -1090,6 +1112,7 @@ public class GameView extends View {
         isGameOver = false;
         invalidate();
     }
+
 
 
 
