@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,10 +21,10 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(Color.parseColor("#7DBAEA"));
         setContentView(R.layout.activity_splash);
 
-        CircleImageView logo = findViewById(R.id.logo);
-        TextView appName = findViewById(R.id.appname);
+        ImageView logo = findViewById(R.id.logo);
+        //TextView appName = findViewById(R.id.appname);
 
-        // Initial state
+       /* // Initial state
         logo.setScaleX(0.6f);
         logo.setScaleY(0.6f);
         logo.setAlpha(0f);
@@ -46,7 +47,9 @@ public class SplashActivity extends AppCompatActivity {
                 .translationY(0f)
                 .setDuration(600)
                 .setStartDelay(500)
-                .start();
+                .start(); */
+
+
 
         // Move to Home screen
         new Handler(Looper.getMainLooper()).postDelayed(() -> {

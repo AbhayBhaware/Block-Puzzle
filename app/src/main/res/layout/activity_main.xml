@@ -86,17 +86,24 @@
             android:layout_gravity="center"/>
     </androidx.cardview.widget.CardView>
 
-    <TextView
+    <com.example.blockpuzzle.StrokeTextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Score: 0"
-        android:textSize="22sp"
+        android:text="SCORE  0"
+        android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="@color/white"
+        android:textColor="#00E5FF"
+        android:fontFamily="sans-serif-condensed"
+        android:background="@drawable/score_bg"
         android:layout_below="@id/highScoreTextCard"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="14dp"
+        android:letterSpacing="0.1"
+        android:shadowColor="#00E5FF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="12"/>
 
 
 
