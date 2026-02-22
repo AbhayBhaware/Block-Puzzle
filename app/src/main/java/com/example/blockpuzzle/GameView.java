@@ -53,6 +53,9 @@ public class GameView extends View {
 
     private List<int[]> lastPlacedCells = new ArrayList<>();
 
+    private Paint fillTextPaint;
+    private Paint strokeTextPaint;
+
 
 
 
@@ -214,6 +217,16 @@ public class GameView extends View {
             }
         }
 
+        fillTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fillTextPaint.setTextAlign(Paint.Align.CENTER);
+        fillTextPaint.setFakeBoldText(true);
+
+        strokeTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        strokeTextPaint.setStyle(Paint.Style.STROKE);
+        strokeTextPaint.setStrokeWidth(8);
+        strokeTextPaint.setTextAlign(Paint.Align.CENTER);
+        strokeTextPaint.setFakeBoldText(true);
+
 
 
     }
@@ -265,8 +278,19 @@ public class GameView extends View {
             canvas.save();
             canvas.scale(scale, scale, currentX, currentY);
 
-            floatingTextPaint.setColor(ft.color);
-            canvas.drawText(ft.text, currentX, currentY, floatingTextPaint);
+            fillTextPaint.setTextSize(ft.textSize);
+            strokeTextPaint.setTextSize(ft.textSize);
+
+            fillTextPaint.setAlpha(alpha);
+            strokeTextPaint.setAlpha(alpha);
+
+// STROKE FIRST
+            strokeTextPaint.setColor(ft.strokeColor);
+            canvas.drawText(ft.text, currentX, currentY, strokeTextPaint);
+
+// FILL ON TOP
+            fillTextPaint.setColor(ft.fillColor);
+            canvas.drawText(ft.text, currentX, currentY, fillTextPaint);
 
             canvas.restore();
 
@@ -484,9 +508,12 @@ public class GameView extends View {
             }
 
             //  Placement score based on block size
-            int placementScore = countBlockCells(block);
-            score += placementScore;
+            int blockCells = countBlockCells(block);
 
+// scale with game progress
+            int placementScore = blockCells * (1 + score / 500);
+
+            score += placementScore;
 // Notify UI
             if (scoreListener != null) {
                 scoreListener.onScoreChanged(score);
@@ -753,10 +780,6 @@ public class GameView extends View {
         }
 
 
-
-
-
-
         // Score logic
         if (clearedLines > 0) {
 
@@ -764,19 +787,36 @@ public class GameView extends View {
             if (comboCount > MAX_COMBO) comboCount = MAX_COMBO;
 
             int multiplier = comboCount;
-            int gainedScore = clearedLines * 10 * multiplier;
+            int baseLineScore = 50;
+
+// multi-line bonus
+            int lineBonus = clearedLines * clearedLines * baseLineScore;
+
+// combo multiplier
+            int comboBonus = comboCount * 20;
+
+// late game scaling
+            int difficultyBonus = Math.min(score / 2000, 5);
+
+            int gainedScore = (lineBonus + comboBonus) * (1 + difficultyBonus);
+
+            if (clearedLines >= 2) {
+                gainedScore += 100 * comboCount;
+            }
 
             soundManager.playClear();
 
             score += gainedScore;
 
+            final int finalScoreToShow = gainedScore;   //  make final copy
+
             if (comboCount > 1) {
                 showComboText(comboCount);
 
                 postDelayed(() -> {
-                    showScoreText(gainedScore);
+                    showScoreText(finalScoreToShow);
                     invalidate();
-                }, 200); // slight delay after combo text
+                }, 200);
             } else {
                 showScoreText(gainedScore);
             }
@@ -907,14 +947,19 @@ public class GameView extends View {
     }
 
     private class FloatingText {
+
         float startX, startY;
         float targetX, targetY;
-        float scale = 1f;
 
         String text;
+
         long startTime;
         long duration;
-        int color;
+
+        int fillColor;
+        int strokeColor;
+
+        float textSize;
     }
 
     private float getScoreX() {
@@ -1019,7 +1064,7 @@ public class GameView extends View {
 
         FloatingText ft = new FloatingText();
 
-        ft.text = "Combo x" + combo;
+        ft.text = "COMBO x" + combo;
 
         ft.startX = gridMargin + (cols * cellSize) / 2f;
         ft.startY = gridMargin + (rows * cellSize) / 2f - cellSize * 0.4f;
@@ -1028,8 +1073,12 @@ public class GameView extends View {
         ft.targetY = ft.startY - cellSize * 0.5f;
 
         ft.startTime = System.currentTimeMillis();
-        ft.duration = 350;
-        ft.color = Color.parseColor("#FF5722");
+        ft.duration = 400;
+
+        ft.fillColor = Color.parseColor("#4CAF50");   // punch orange
+        ft.strokeColor = Color.BLACK;
+
+        ft.textSize = cellSize * 1.1f;
 
         floatingTexts.add(ft);
     }
@@ -1041,15 +1090,21 @@ public class GameView extends View {
 
         ft.text = "+" + scoreValue;
 
-        ft.startX = gridMargin + (cols * cellSize) / 2f;
-        ft.startY = gridMargin + (rows * cellSize) / 2f + cellSize * 0.3f;
+        float[] center = getLastPlacedBlockCenter();
+
+        ft.startX = center[0];
+        ft.startY = center[1];
 
         ft.targetX = getScoreX();
         ft.targetY = getScoreY();
 
         ft.startTime = System.currentTimeMillis();
         ft.duration = 700;
-        ft.color = Color.parseColor("#FFEB3B");
+
+        ft.fillColor = Color.parseColor("#00E5FF");   // neon cyan
+        ft.strokeColor = Color.BLACK;
+
+        ft.textSize = cellSize * 0.9f;
 
         floatingTexts.add(ft);
     }
@@ -1111,6 +1166,29 @@ public class GameView extends View {
     public void resumeGame() {
         isGameOver = false;
         invalidate();
+    }
+
+    private float[] getLastPlacedBlockCenter() {
+
+        if (lastPlacedCells.isEmpty())
+            return new float[]{getWidth()/2f, getHeight()/2f};
+
+        float sumX = 0;
+        float sumY = 0;
+
+        for (int[] cell : lastPlacedCells) {
+
+            float cx = gridMargin + cell[1] * cellSize + cellSize / 2f;
+            float cy = gridMargin + cell[0] * cellSize + cellSize / 2f;
+
+            sumX += cx;
+            sumY += cy;
+        }
+
+        float centerX = sumX / lastPlacedCells.size();
+        float centerY = sumY / lastPlacedCells.size();
+
+        return new float[]{centerX, centerY};
     }
 
 
