@@ -104,11 +104,11 @@ public class GameView extends View {
 
 
     private int[] colors = {
-            Color.parseColor("#F44336"), // Red
-            Color.parseColor("#2196F3"), // Blue
+            Color.parseColor("#FF5252"), // Bright Red
+            Color.parseColor("#448AFF"), // Bright Blue
             Color.parseColor("#4CAF50"), // Green
             Color.parseColor("#FF9800"), // Orange
-            Color.parseColor("#9C27B0"), // Purple
+            Color.parseColor("#E040FB"), // Pink/Purple
             Color.parseColor("#00BCD4")  // Cyan
     };
 
@@ -185,7 +185,7 @@ public class GameView extends View {
         gridPaint.setColor(Color.GRAY);
         gridPaint.setStrokeWidth(3);
 
-        blockPaint = new Paint();
+        blockPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         blockPaint.setColor(Color.BLUE);
 
         highlightRows = new boolean[rows];
@@ -204,8 +204,8 @@ public class GameView extends View {
 
         boardBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         boardBorderPaint.setStyle(Paint.Style.STROKE);
-        boardBorderPaint.setStrokeWidth(getResources().getDisplayMetrics().density * 6);
-        boardBorderPaint.setColor(Color.parseColor("#0097A7")); // border color
+        boardBorderPaint.setStrokeWidth(getResources().getDisplayMetrics().density * 4);
+        boardBorderPaint.setColor(Color.parseColor("#3F4466")); // subtle border
 
 
         slotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -233,27 +233,21 @@ public class GameView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-
-       /* canvas.save();
-        canvas.scale(animationScale, animationScale,
-                getWidth() / 2f,
-                getHeight() / 2f); */
-
-
         super.onDraw(canvas);
-
-
 
         drawBoard(canvas);
         drawFilledCells(canvas);
         drawBlocks(canvas);
 
-        long now = System.currentTimeMillis();
+        drawFloatingTexts(canvas);
+        drawParticles(canvas);
+    }
 
+    private void drawFloatingTexts(Canvas canvas) {
+        long now = System.currentTimeMillis();
         Iterator<FloatingText> iterator = floatingTexts.iterator();
 
         while (iterator.hasNext()) {
-
             FloatingText ft = iterator.next();
             long elapsed = now - ft.startTime;
 
@@ -263,16 +257,10 @@ public class GameView extends View {
             }
 
             float progress = (float) elapsed / ft.duration;
-
-
             float currentX = ft.startX + (ft.targetX - ft.startX) * progress;
             float currentY = ft.startY + (ft.targetY - ft.startY) * progress;
 
-// fade
             int alpha = (int) (255 * (1 - progress));
-            floatingTextPaint.setAlpha(alpha);
-
-// shrink slightly
             float scale = 1f - (0.4f * progress);
 
             canvas.save();
@@ -284,30 +272,26 @@ public class GameView extends View {
             fillTextPaint.setAlpha(alpha);
             strokeTextPaint.setAlpha(alpha);
 
-// STROKE FIRST
             strokeTextPaint.setColor(ft.strokeColor);
             canvas.drawText(ft.text, currentX, currentY, strokeTextPaint);
 
-// FILL ON TOP
             fillTextPaint.setColor(ft.fillColor);
             canvas.drawText(ft.text, currentX, currentY, fillTextPaint);
 
             canvas.restore();
-
         }
 
         if (!floatingTexts.isEmpty()) {
             postInvalidateOnAnimation();
         }
+    }
 
-
-        //  DRAW PARTICLES
+    private void drawParticles(Canvas canvas) {
         long nowParticles = System.currentTimeMillis();
         Iterator<Particle> particleIterator = particles.iterator();
 
         while (particleIterator.hasNext()) {
             Particle p = particleIterator.next();
-
             float elapsed = nowParticles - p.startTime;
             if (elapsed > p.lifetime) {
                 particleIterator.remove();
@@ -315,160 +299,111 @@ public class GameView extends View {
             }
 
             float progress = elapsed / p.lifetime;
-
-            // move
             p.x += p.vx;
             p.y += p.vy;
 
-            // fade out
             int alpha = (int) (255 * (1 - progress));
             particlePaint.setAlpha(alpha);
             particlePaint.setColor(p.color);
 
-            canvas.drawCircle(p.x, p.y, p.radius, particlePaint);
+            canvas.drawCircle(p.x, p.y, p.radius * (1 - progress * 0.5f), particlePaint);
         }
 
-// keep animation alive
         if (!particles.isEmpty()) {
             postInvalidateOnAnimation();
         }
-
-
     }
 
-
-
-
-
     private void drawFilledCells(Canvas canvas) {
-
         float radius = blockRadius;
-
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-
                 if (grid[i][j] != EMPTY) {
-
-                    int baseColor = (highlightRows[i] || highlightCols[j])
-                            ? highlightColor
-                            : grid[i][j];
-
-
-                    float left   = gridMargin + j * cellSize + slotGap;
-                    float top    = gridMargin + i * cellSize + slotGap;
-                    float right  = gridMargin + (j + 1) * cellSize - slotGap;
+                    int baseColor = (highlightRows[i] || highlightCols[j]) ? highlightColor : grid[i][j];
+                    float left = gridMargin + j * cellSize + slotGap;
+                    float top = gridMargin + i * cellSize + slotGap;
+                    float right = gridMargin + (j + 1) * cellSize - slotGap;
                     float bottom = gridMargin + (i + 1) * cellSize - slotGap;
 
-
-
-                    // Gradient (3D effect)
-                    blockPaint.setShader(new android.graphics.LinearGradient(
-                            left, top,
-                            left, bottom,
-                            lighten(baseColor),
-                            darken(baseColor),
-                            android.graphics.Shader.TileMode.CLAMP
-                    ));
-
-                    canvas.drawRoundRect(left, top, right, bottom, radius, radius, blockPaint);
-
-                    blockPaint.setShader(null);
+                    drawStyledBlock(canvas, left, top, right, bottom, baseColor, radius);
                 }
             }
         }
     }
 
+    private void drawStyledBlock(Canvas canvas, float left, float top, float right, float bottom, int color, float radius) {
+        // Main block body with gradient
+        blockPaint.setShader(new android.graphics.LinearGradient(
+                left, top, left, bottom,
+                lighten(color), darken(color),
+                android.graphics.Shader.TileMode.CLAMP
+        ));
+        canvas.drawRoundRect(left, top, right, bottom, radius, radius, blockPaint);
+        blockPaint.setShader(null);
 
+        // Subtle Top Highlight (Bevel effect)
+        Paint highlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        highlightPaint.setStyle(Paint.Style.FILL);
+        highlightPaint.setColor(Color.WHITE);
+        highlightPaint.setAlpha(50);
+        float hMargin = (right - left) * 0.15f;
+        canvas.drawRoundRect(left + hMargin, top + hMargin, right - hMargin, top + hMargin * 2.2f, radius / 2, radius / 2, highlightPaint);
+    }
 
     private void drawBlocks(Canvas canvas) {
         for (Block block : availableBlocks) {
-            if (block.isUsed) continue;
+            if (block == null || block.isUsed) continue;
             drawSingleBlock(canvas, block);
         }
     }
 
-
     private void drawSingleBlock(Canvas canvas, Block block) {
-
         float radius = blockRadius;
-
         canvas.save();
 
-        // ⭐ scale around block center
         float centerX = block.x + (block.getWidth() * cellSize) / 2f;
         float centerY = block.y + (block.getHeight() * cellSize) / 2f;
-
         canvas.scale(block.scale, block.scale, centerX, centerY);
 
         for (int i = 0; i < block.shape.length; i++) {
             for (int j = 0; j < block.shape[0].length; j++) {
-
                 if (block.shape[i][j] == 1) {
-
                     float left = block.x + j * cellSize + slotGap;
                     float top = block.y + i * cellSize + slotGap;
                     float right = left + cellSize - slotGap * 2;
                     float bottom = top + cellSize - slotGap * 2;
 
-                    blockPaint.setShader(new android.graphics.LinearGradient(
-                            left, top,
-                            left, bottom,
-                            lighten(block.color),
-                            darken(block.color),
-                            android.graphics.Shader.TileMode.CLAMP
-                    ));
-
-                    canvas.drawRoundRect(left, top, right, bottom, radius, radius, blockPaint);
-                    blockPaint.setShader(null);
+                    drawStyledBlock(canvas, left, top, right, bottom, block.color, radius);
                 }
             }
         }
-
         canvas.restore();
     }
 
-
-
-
-
-
-
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         if (isGameOver) return false;
 
-
         switch (event.getAction()) {
-
             case MotionEvent.ACTION_DOWN:
                 for (Block block : availableBlocks) {
-                    if (block.isUsed) continue;
-
+                    if (block == null || block.isUsed) continue;
                     if (isTouchInsideBlock(event, block)) {
                         draggingBlock = block;
-
                         block.startX = block.x;
                         block.startY = block.y;
-
-                        dragOffsetY = cellSize * 4f;
-                        block.scale = 1f;
-                        block.targetScale = 1f;
-
+                        dragOffsetY = cellSize * 3.5f;
+                        block.scale = 1.0f;
+                        invalidate();
                         break;
                     }
                 }
-
                 break;
-
 
             case MotionEvent.ACTION_MOVE:
                 if (draggingBlock != null) {
-                    draggingBlock.x = event.getX() - (cellSize / 2f);
+                    draggingBlock.x = event.getX() - (draggingBlock.getWidth() * cellSize / 2f);
                     draggingBlock.y = event.getY() - dragOffsetY;
-
-
                     invalidate();
                 }
                 break;
@@ -561,7 +496,7 @@ public class GameView extends View {
 
     private boolean allBlocksUsed() {
         for (Block block : availableBlocks) {
-            if (!block.isUsed) {
+            if (block != null && !block.isUsed) {
                 return false;
             }
         }
@@ -594,7 +529,7 @@ public class GameView extends View {
     public void generateBlocks() {
 
         float spacing = cellSize * 0.4f; // smaller & natural gap
-        float startY = gridMargin + rows * cellSize + (cellSize * 2f);
+        float startY = gridMargin + rows * cellSize + (cellSize * 2.5f);
 
         //  Create blocks first
         for (int i = 0; i < 3; i++) {
@@ -615,7 +550,7 @@ public class GameView extends View {
         //  Calculate total width using REAL block sizes
         float totalWidth = 0;
         for (int i = 0; i < 3; i++) {
-            totalWidth += availableBlocks[i].getWidth() * cellSize;
+            totalWidth += availableBlocks[i].getWidth() * cellSize * 0.6f;
             if (i < 2) totalWidth += spacing;
         }
 
@@ -643,7 +578,7 @@ public class GameView extends View {
             block.startX = block.x;
             block.startY = block.y;
 
-            currentX += block.getWidth() * cellSize + spacing;
+            currentX += block.getWidth() * cellSize * 0.6f + spacing;
         }
 
     }
@@ -686,8 +621,8 @@ public class GameView extends View {
 
 
     private boolean isTouchInsideBlock(MotionEvent e, com.example.blockpuzzlegame.Block block) {
-        float width = block.getWidth() * cellSize;
-        float height = block.getHeight() * cellSize;
+        float width = block.getWidth() * cellSize * block.scale;
+        float height = block.getHeight() * cellSize * block.scale;
 
         return e.getX() >= block.x && e.getX() <= block.x + width &&
                 e.getY() >= block.y && e.getY() <= block.y + height;
@@ -847,7 +782,7 @@ public class GameView extends View {
 
         for (Block block : availableBlocks) {
 
-            if (block.isUsed) continue;
+            if (block == null || block.isUsed) continue;
 
             int blockHeight = block.shape.length;
             int blockWidth = block.shape[0].length;
@@ -943,7 +878,7 @@ public class GameView extends View {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        soundManager.release();
+        if (soundManager != null) soundManager.release();
     }
 
     private class FloatingText {
@@ -979,9 +914,9 @@ public class GameView extends View {
         cellSize = (int) ((w - 2 * gridMargin) / cols);
 
         slotGap = cellSize * 0.025f;
-        slotRadius = cellSize * 0.06f;
-        blockRadius = cellSize * 0.08f;
-        boardRadius = cellSize * 0.12f;
+        slotRadius = cellSize * 0.08f;
+        blockRadius = cellSize * 0.12f;
+        boardRadius = cellSize * 0.15f;
 
         floatingTextPaint.setTextSize(cellSize * 0.8f);
 
@@ -996,46 +931,27 @@ public class GameView extends View {
         float boardRight = gridMargin + cols * cellSize;
         float boardBottom = gridMargin + rows * cellSize;
 
-        // Board background (container)
-        canvas.drawRoundRect(
-                boardLeft,
-                boardTop,
-                boardRight,
-                boardBottom,
-                boardRadius,
-                boardRadius,
-                boardPaint
-        );
+        // Subtle Shadow under the board
+        Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint.setColor(Color.BLACK);
+        shadowPaint.setAlpha(60);
+        canvas.drawRoundRect(boardLeft + 10, boardTop + 10, boardRight + 10, boardBottom + 10, boardRadius, boardRadius, shadowPaint);
 
-        canvas.drawRoundRect(
-                boardLeft,
-                boardTop,
-                boardRight,
-                boardBottom,
-                boardRadius,
-                boardRadius,
-                boardBorderPaint
-        );
+        // Board background
+        canvas.drawRoundRect(boardLeft, boardTop, boardRight, boardBottom, boardRadius, boardRadius, boardPaint);
+
+        // Board border
+        canvas.drawRoundRect(boardLeft, boardTop, boardRight, boardBottom, boardRadius, boardRadius, boardBorderPaint);
 
         // Empty slots
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-
                 float left   = gridMargin + j * cellSize + slotGap;
                 float top    = gridMargin + i * cellSize + slotGap;
                 float right  = gridMargin + (j + 1) * cellSize - slotGap;
                 float bottom = gridMargin + (i + 1) * cellSize - slotGap;
 
-
-                canvas.drawRoundRect(
-                        left,
-                        top,
-                        right,
-                        bottom,
-                        slotRadius,
-                        slotRadius,
-                        slotPaint
-                );
+                canvas.drawRoundRect(left, top, right, bottom, slotRadius, slotRadius, slotPaint);
             }
         }
     }
@@ -1045,18 +961,18 @@ public class GameView extends View {
     private int lighten(int color) {
         return Color.argb(
                 Color.alpha(color),
-                Math.min(255, (int)(Color.red(color) * 1.2)),
-                Math.min(255, (int)(Color.green(color) * 1.2)),
-                Math.min(255, (int)(Color.blue(color) * 1.2))
+                Math.min(255, (int)(Color.red(color) * 1.25)),
+                Math.min(255, (int)(Color.green(color) * 1.25)),
+                Math.min(255, (int)(Color.blue(color) * 1.25))
         );
     }
 
     private int darken(int color) {
         return Color.argb(
                 Color.alpha(color),
-                (int)(Color.red(color) * 0.8),
-                (int)(Color.green(color) * 0.8),
-                (int)(Color.blue(color) * 0.8)
+                (int)(Color.red(color) * 0.75),
+                (int)(Color.green(color) * 0.75),
+                (int)(Color.blue(color) * 0.75)
         );
     }
 
@@ -1190,48 +1106,4 @@ public class GameView extends View {
 
         return new float[]{centerX, centerY};
     }
-
-
-
-
-
-
-
-
-
-
-
-    /*private void drawEmptySlots(Canvas canvas) {
-
-        float padding = cellPadding;              // SAME padding
-        float radius = cellSize * 0.18f;           // slightly rounded
-
-        Paint emptyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        emptyPaint.setColor(emptySlotColor);
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-
-                float left = j * cellSize + padding;
-                float top = i * cellSize + padding;
-                float right = left + cellSize - padding * 2;
-                float bottom = top + cellSize - padding * 2;
-
-                canvas.drawRoundRect(
-                        left,
-                        top,
-                        right,
-                        bottom,
-                        radius,
-                        radius,
-                        emptyPaint
-                );
-            }
-        }
-    }*/
-
-
-
-
-
 }

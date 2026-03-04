@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Primary Game Colors -->
+    <color name="game_bg_start">#1A237E</color>
+    <color name="game_bg_end">#121858</color>
+    <color name="card_bg">#283593</color>
+    <color name="accent_neon">#00E5FF</color>
+
+    <!-- Block Colors (Modern Palette) -->
+    <color name="block_red">#FF5252</color>
+    <color name="block_blue">#448AFF</color>
+    <color name="block_green">#69F0AE</color>
+    <color name="block_orange">#FFAB40</color>
+    <color name="block_purple">#E040FB</color>
+    <color name="block_cyan">#18FFFF</color>
 </resources>

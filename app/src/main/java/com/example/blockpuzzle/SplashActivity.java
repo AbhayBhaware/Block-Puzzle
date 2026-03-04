@@ -18,7 +18,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setNavigationBarColor(Color.parseColor("#7DBAEA"));
+        getWindow().setNavigationBarColor(Color.parseColor("#0D1231"));
         setContentView(R.layout.activity_splash);
 
         ImageView logo = findViewById(R.id.logo);
