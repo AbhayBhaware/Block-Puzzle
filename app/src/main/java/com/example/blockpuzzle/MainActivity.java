@@ -1,6 +1,5 @@
 package com.example.blockpuzzle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -10,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -146,18 +146,19 @@ public class MainActivity extends AppCompatActivity {
 
         View popupView=getLayoutInflater().inflate(R.layout.menu_pannel,null);
 
-                PopupWindow popupWindow=new PopupWindow(
-                        popupView,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        false
-                );
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
 
-                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                popupWindow.setElevation(10);
+        PopupWindow popupWindow=new PopupWindow(
+                popupView,
+                width,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                true
+        );
 
-        //getWindow().setStatusBarColor(Color.TRANSPARENT);
-        //getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setElevation(10);
+        popupWindow.setOutsideTouchable(true);
+
 
 
         dimBackground.setAlpha(0f);
@@ -168,46 +169,44 @@ public class MainActivity extends AppCompatActivity {
             // Do nothing – just block outside touches
         });
 
-                int xoffset=(int)(getResources().getDisplayMetrics().density * -75);
-                popupWindow.showAtLocation(
-                        findViewById(android.R.id.content),
-                        Gravity.CENTER,
-                        0,
-                        0
-                );
+        popupWindow.showAtLocation(
+                findViewById(android.R.id.content),
+                Gravity.CENTER,
+                0,
+                0
+        );
+
+        popupWindow.setOnDismissListener(() -> {
+            dimBackground.animate().alpha(0f).setDuration(200)
+                    .withEndAction(() -> dimBackground.setVisibility(View.GONE));
+        });
 
         popupView.findViewById(R.id.closeButton).setOnClickListener(v -> {
             popupWindow.dismiss();
-
-            dimBackground.animate().alpha(0f).setDuration(200)
-                    .withEndAction(() -> dimBackground.setVisibility(View.GONE));
-
-            getWindow().setStatusBarColor(Color.parseColor("#7DBAEA"));
-            getWindow().setNavigationBarColor(Color.parseColor("#7DBAEA"));
         });
 
-                View.OnClickListener menuClickListner = view-> {
-                    int id=view.getId();
+        View.OnClickListener menuClickListner = view-> {
+            int id=view.getId();
 
-                    if (id==R.id.musiclinearlayout)
-                    {
-                        Toast.makeText(MainActivity.this, "Music clicked", Toast.LENGTH_SHORT).show();
-                    } else if (id==R.id.soundlinearlayout)
-                    {
-                        Toast.makeText(MainActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
-                    } else if (id==R.id.homelinearlayout)
-                    {
-                        Toast.makeText(MainActivity.this, "Home Clicked", Toast.LENGTH_SHORT).show();
-                    } else if (id==R.id.restartlinearlayout)
-                    {
-                        Toast.makeText(MainActivity.this, "Restart clicked", Toast.LENGTH_SHORT).show();
-                    }
+            if (id==R.id.musiclinearlayout)
+            {
+                Toast.makeText(MainActivity.this, "Music clicked", Toast.LENGTH_SHORT).show();
+            } else if (id==R.id.soundlinearlayout)
+            {
+                Toast.makeText(MainActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
+            } else if (id==R.id.homelinearlayout)
+            {
+                Toast.makeText(MainActivity.this, "Home Clicked", Toast.LENGTH_SHORT).show();
+            } else if (id==R.id.restartlinearlayout)
+            {
+                Toast.makeText(MainActivity.this, "Restart clicked", Toast.LENGTH_SHORT).show();
+            }
 
-                };
-                popupView.findViewById(R.id.musiclinearlayout).setOnClickListener(menuClickListner);
-                popupView.findViewById(R.id.soundlinearlayout).setOnClickListener(menuClickListner);
-                popupView.findViewById(R.id.homelinearlayout).setOnClickListener(menuClickListner);
-                popupView.findViewById(R.id.restartlinearlayout).setOnClickListener(menuClickListner);
+        };
+        popupView.findViewById(R.id.musiclinearlayout).setOnClickListener(menuClickListner);
+        popupView.findViewById(R.id.soundlinearlayout).setOnClickListener(menuClickListner);
+        popupView.findViewById(R.id.homelinearlayout).setOnClickListener(menuClickListner);
+        popupView.findViewById(R.id.restartlinearlayout).setOnClickListener(menuClickListner);
 
     }
 
@@ -215,9 +214,11 @@ public class MainActivity extends AppCompatActivity {
 
         View popupView = getLayoutInflater().inflate(R.layout.gameover_pannel, null);
 
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
+
         PopupWindow popupWindow = new PopupWindow(
                 popupView,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+                width,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 false
         );

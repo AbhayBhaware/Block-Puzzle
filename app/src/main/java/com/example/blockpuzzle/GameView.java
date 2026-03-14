@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -219,13 +220,13 @@ public class GameView extends View {
 
         fillTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         fillTextPaint.setTextAlign(Paint.Align.CENTER);
-        fillTextPaint.setFakeBoldText(true);
+        fillTextPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
 
         strokeTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         strokeTextPaint.setStyle(Paint.Style.STROKE);
-        strokeTextPaint.setStrokeWidth(8);
+        strokeTextPaint.setStrokeWidth(10);
         strokeTextPaint.setTextAlign(Paint.Align.CENTER);
-        strokeTextPaint.setFakeBoldText(true);
+        strokeTextPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
 
 
 
@@ -257,11 +258,25 @@ public class GameView extends View {
             }
 
             float progress = (float) elapsed / ft.duration;
-            float currentX = ft.startX + (ft.targetX - ft.startX) * progress;
-            float currentY = ft.startY + (ft.targetY - ft.startY) * progress;
+            
+            // Smoother ease-out movement
+            float t = progress;
+            float movementProgress = 1 - (1-t)*(1-t); // Quadratic ease-out
+            
+            float currentX = ft.startX + (ft.targetX - ft.startX) * movementProgress;
+            float currentY = ft.startY + (ft.targetY - ft.startY) * movementProgress;
 
-            int alpha = (int) (255 * (1 - progress));
-            float scale = 1f - (0.4f * progress);
+            int alpha = (int) (255 * Math.sin(Math.PI * (1 - progress))); // Fade in and then out
+            if (progress > 0.8f) alpha = (int) (255 * (1 - progress) * 5); // Faster fade at the end
+            
+            float scale;
+            if (ft.type == FloatingText.TYPE_COMBO) {
+                // Pop effect for combo
+                if (progress < 0.2f) scale = 0.5f + (progress / 0.2f) * 0.8f;
+                else scale = 1.3f - ((progress - 0.2f) / 0.8f) * 0.3f;
+            } else {
+                scale = 0.8f + (0.4f * (float)Math.sin(Math.PI * progress));
+            }
 
             canvas.save();
             canvas.scale(scale, scale, currentX, currentY);
@@ -882,6 +897,8 @@ public class GameView extends View {
     }
 
     private class FloatingText {
+        static final int TYPE_SCORE = 0;
+        static final int TYPE_COMBO = 1;
 
         float startX, startY;
         float targetX, targetY;
@@ -895,6 +912,7 @@ public class GameView extends View {
         int strokeColor;
 
         float textSize;
+        int type;
     }
 
     private float getScoreX() {
@@ -979,22 +997,30 @@ public class GameView extends View {
     private void showComboText(int combo) {
 
         FloatingText ft = new FloatingText();
-
+        ft.type = FloatingText.TYPE_COMBO;
         ft.text = "COMBO x" + combo;
 
         ft.startX = gridMargin + (cols * cellSize) / 2f;
-        ft.startY = gridMargin + (rows * cellSize) / 2f - cellSize * 0.4f;
+        ft.startY = gridMargin + (rows * cellSize) / 2f;
 
         ft.targetX = ft.startX;
-        ft.targetY = ft.startY - cellSize * 0.5f;
+        ft.targetY = ft.startY - cellSize * 1.5f;
 
         ft.startTime = System.currentTimeMillis();
-        ft.duration = 400;
+        ft.duration = 1000;
 
-        ft.fillColor = Color.parseColor("#4CAF50");   // punch orange
+        // Dynamic colors for combos
+        int[] comboColors = {
+            Color.parseColor("#4CAF50"), // Green
+            Color.parseColor("#FFC107"), // Amber
+            Color.parseColor("#FF9800"), // Orange
+            Color.parseColor("#FF5722"), // Deep Orange
+            Color.parseColor("#F44336")  // Red
+        };
+        ft.fillColor = comboColors[Math.min(combo - 2, comboColors.length - 1)];
         ft.strokeColor = Color.BLACK;
 
-        ft.textSize = cellSize * 1.1f;
+        ft.textSize = cellSize * 1.2f;
 
         floatingTexts.add(ft);
     }
@@ -1003,7 +1029,7 @@ public class GameView extends View {
     private void showScoreText(int scoreValue) {
 
         FloatingText ft = new FloatingText();
-
+        ft.type = FloatingText.TYPE_SCORE;
         ft.text = "+" + scoreValue;
 
         float[] center = getLastPlacedBlockCenter();
@@ -1015,10 +1041,10 @@ public class GameView extends View {
         ft.targetY = getScoreY();
 
         ft.startTime = System.currentTimeMillis();
-        ft.duration = 700;
+        ft.duration = 900;
 
         ft.fillColor = Color.parseColor("#00E5FF");   // neon cyan
-        ft.strokeColor = Color.BLACK;
+        ft.strokeColor = Color.parseColor("#006064"); // dark cyan stroke
 
         ft.textSize = cellSize * 0.9f;
 

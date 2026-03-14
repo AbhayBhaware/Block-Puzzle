@@ -65,16 +65,18 @@ public class HomeActivity extends AppCompatActivity {
                 animateButton(v);
                 View popupView=getLayoutInflater().inflate(R.layout.settings_pannel,null);
 
+                int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
+
                 PopupWindow popupWindow=new PopupWindow(
                         popupView,
+                        width,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        false
+                        true
                 );
 
                 popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 popupWindow.setElevation(10);
-
+                popupWindow.setOutsideTouchable(true);
 
 
                 dimBackground.setAlpha(0f);
@@ -85,7 +87,6 @@ public class HomeActivity extends AppCompatActivity {
                     // Do nothing – just block outside touches
                 });
 
-                int xoffset=(int)(getResources().getDisplayMetrics().density * -75);
                 popupWindow.showAtLocation(
                         findViewById(android.R.id.content),
                         Gravity.CENTER,
@@ -93,11 +94,13 @@ public class HomeActivity extends AppCompatActivity {
                         0
                 );
 
-                popupView.findViewById(R.id.closeButton).setOnClickListener(view -> {
-                    popupWindow.dismiss();
-
+                popupWindow.setOnDismissListener(() -> {
                     dimBackground.animate().alpha(0f).setDuration(200)
                             .withEndAction(() -> dimBackground.setVisibility(View.GONE));
+                });
+
+                popupView.findViewById(R.id.closeButton).setOnClickListener(view -> {
+                    popupWindow.dismiss();
                 });
 
 
