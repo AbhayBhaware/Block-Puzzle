@@ -3,13 +3,15 @@ package com.example.blockpuzzle;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.example.blockpuzzlegame.Block;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,58 +21,43 @@ public class GameView extends View {
 
     private int score = 0;
     private boolean isGameOver = false;
-    private int clearAlpha = 255;
 
-    private int gridFillColor = Color.parseColor("#455A64"); // neutral dark
-    private int highlightColor = Color.parseColor("#FFD54F"); // gold highlight
+    private final int highlightColor = Color.parseColor("#FFD54F"); // gold highlight
 
     private boolean[] highlightRows;
     private boolean[] highlightCols;
 
-
     private SoundManager soundManager;
 
-    private List<FloatingText> floatingTexts = new ArrayList<>();
+    private final List<FloatingText> floatingTexts = new ArrayList<>();
     private Paint floatingTextPaint;
 
-    private float cellGap; // space between cells
-    private float cellPadding;
+    private float dragTouchOffsetX;
+    private float dragTouchOffsetY;
+
+    private float dragLiftY;
 
     private int comboCount = 0;
-    private static final int MAX_COMBO = 5;
 
+    private boolean useReviveBlocks = false; // Flag to force 1x1 blocks on revive
 
     private float slotRadius;
     private float blockRadius;
     private float boardRadius;
 
-    private float dragOffsetY;
-
-
     private float gridMargin;
-
 
     private float slotGap;
 
-    private List<int[]> lastPlacedCells = new ArrayList<>();
+    private final List<int[]> lastPlacedCells = new ArrayList<>();
 
     private Paint fillTextPaint;
     private Paint strokeTextPaint;
 
+    private final ArrayList<Particle> particles = new ArrayList<>();
+    private final Paint particlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-
-
-    private int emptySlotColor = Color.parseColor("#1E233A");
-
-    ArrayList<Particle> particles = new ArrayList<>();
-    Paint particlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-
-
-
-
-    private int[][][] easyShapes = {
-
+    private final int[][][] easyShapes = {
             {{1}},
             {{1, 1}},
             {{1}, {1}},
@@ -79,32 +66,30 @@ public class GameView extends View {
             {{1}, {1}, {1}},
     };
 
-    private int[][][] mediumShapes = {
-
-            {{1, 0},
-                    {1, 0},
-                    {1, 1}},
-            {{1, 1},
-                    {1, 0},
-                    {1, 0}},
-
-            {{0, 1},
-                    {0, 1},
-                    {1, 1}},
-            {{1, 1},
-                    {0, 1},
-                    {0, 1}},
-
-            {{0, 1, 0},
-                    {1, 1, 1}},
-
-            {{1, 1, 1},
-                    {0, 1, 0}}
+    private final int[][][] mediumShapes = {
+            {{1, 0}, {1, 0}, {1, 1}},
+            {{1, 1}, {1, 0}, {1, 0}},
+            {{0, 1}, {0, 1}, {1, 1}},
+            {{1, 1}, {0, 1}, {0, 1}},
+            {{1, 0}, {1, 1}, {1, 0}},
+            {{0, 1}, {1, 1}, {0, 1}},
+            {{0, 1, 0}, {1, 1, 1}},
+            {{1, 1, 1}, {0, 1, 0}},
+            {{1, 1, 1}, {1, 0, 0}},
+            {{1, 1, 1}, {0, 0, 1}},
+            {{1, 0, 0}, {1, 1, 1}},
+            {{0, 0, 1}, {1, 1, 1}},
+            {{1, 1}, {1, 0}},
+            {{1, 1}, {0, 1}},
+            {{1, 0}, {1, 1}},
+            {{0, 1}, {1, 1}},
+            {{1, 0}, {0, 1}},
+            {{0, 1}, {1, 0}},
+            {{1, 1, 0}, {0, 1, 1}},
+            {{0, 1, 1}, {1, 1, 0}},
     };
 
-
-
-    private int[] colors = {
+    private final int[] colors = {
             Color.parseColor("#FF5252"), // Bright Red
             Color.parseColor("#448AFF"), // Bright Blue
             Color.parseColor("#4CAF50"), // Green
@@ -113,29 +98,19 @@ public class GameView extends View {
             Color.parseColor("#00BCD4")  // Cyan
     };
 
+    private final Block[] availableBlocks = new Block[3];
+    private Block draggingBlock = null;
 
-
-    private com.example.blockpuzzlegame.Block[] availableBlocks = new com.example.blockpuzzlegame.Block[3];
-    private com.example.blockpuzzlegame.Block draggingBlock = null;
-
-
-    private int rows = 8, cols = 8;
+    private final int rows = 8, cols = 8;
     private int cellSize;
-    private int[][] grid = new int[rows][cols];
+    private final int[][] grid = new int[rows][cols];
 
     private static final int EMPTY = -1;
 
-
-    private Paint gridPaint, blockPaint;
-
+    private Paint blockPaint;
     private Paint boardBorderPaint;
-
     private Paint boardPaint;
     private Paint slotPaint;
-
-
-    private float blockX = 100, blockY = 1200;
-    private boolean dragging = false;
 
     public interface CoinListener {
         void onCoinsEarned(int coins);
@@ -147,7 +122,6 @@ public class GameView extends View {
         this.coinListener = listener;
     }
 
-
     public interface ScoreListener {
         void onScoreChanged(int score);
     }
@@ -158,47 +132,33 @@ public class GameView extends View {
         this.scoreListener = listener;
     }
 
-
-    // ✅ REQUIRED constructor for XML
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
-        soundManager = new SoundManager(context);
-
+        init(context);
     }
 
-    // ✅ Optional but recommended
     public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
-    // Optional for Java usage
     public GameView(Context context) {
         super(context);
-        init();
-
-
+        init(context);
     }
 
-    private void init() {
-        gridPaint = new Paint();
-        gridPaint.setColor(Color.GRAY);
-        gridPaint.setStrokeWidth(3);
+    private void init(Context context) {
+        soundManager = new SoundManager(context);
 
         blockPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        blockPaint.setColor(Color.BLUE);
 
         highlightRows = new boolean[rows];
         highlightCols = new boolean[cols];
 
         floatingTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         floatingTextPaint.setColor(Color.WHITE);
-        cellSize = getWidth() / cols;
-        floatingTextPaint.setTextSize(cellSize * 0.8f);
         floatingTextPaint.setTextAlign(Paint.Align.CENTER);
         floatingTextPaint.setFakeBoldText(true);
-
 
         boardPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         boardPaint.setColor(Color.parseColor("#2B2E4A")); // dark board
@@ -207,7 +167,6 @@ public class GameView extends View {
         boardBorderPaint.setStyle(Paint.Style.STROKE);
         boardBorderPaint.setStrokeWidth(getResources().getDisplayMetrics().density * 4);
         boardBorderPaint.setColor(Color.parseColor("#3F4466")); // subtle border
-
 
         slotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         slotPaint.setColor(Color.parseColor("#1F2238")); // empty slot
@@ -227,13 +186,10 @@ public class GameView extends View {
         strokeTextPaint.setStrokeWidth(10);
         strokeTextPaint.setTextAlign(Paint.Align.CENTER);
         strokeTextPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-
-
-
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
         drawBoard(canvas);
@@ -260,8 +216,7 @@ public class GameView extends View {
             float progress = (float) elapsed / ft.duration;
             
             // Smoother ease-out movement
-            float t = progress;
-            float movementProgress = 1 - (1-t)*(1-t); // Quadratic ease-out
+            float movementProgress = 1 - (1 - progress) * (1 - progress); // Quadratic ease-out
             
             float currentX = ft.startX + (ft.targetX - ft.startX) * movementProgress;
             float currentY = ft.startY + (ft.targetY - ft.startY) * movementProgress;
@@ -348,10 +303,10 @@ public class GameView extends View {
 
     private void drawStyledBlock(Canvas canvas, float left, float top, float right, float bottom, int color, float radius) {
         // Main block body with gradient
-        blockPaint.setShader(new android.graphics.LinearGradient(
+        blockPaint.setShader(new LinearGradient(
                 left, top, left, bottom,
                 lighten(color), darken(color),
-                android.graphics.Shader.TileMode.CLAMP
+                Shader.TileMode.CLAMP
         ));
         canvas.drawRoundRect(left, top, right, bottom, radius, radius, blockPaint);
         blockPaint.setShader(null);
@@ -403,23 +358,42 @@ public class GameView extends View {
             case MotionEvent.ACTION_DOWN:
                 for (Block block : availableBlocks) {
                     if (block == null || block.isUsed) continue;
+
                     if (isTouchInsideBlock(event, block)) {
                         draggingBlock = block;
                         block.startX = block.x;
                         block.startY = block.y;
-                        dragOffsetY = cellSize * 3.5f;
+
+                        float fullWidth = block.getWidth() * cellSize;
+                        float fullHeight = block.getHeight() * cellSize;
+                        float scaledWidth = fullWidth * block.scale;
+                        float scaledHeight = fullHeight * block.scale;
+
+                        float visibleLeft = block.x + (fullWidth - scaledWidth) / 2f;
+                        float visibleTop = block.y + (fullHeight - scaledHeight) / 2f;
+
+                        dragTouchOffsetX = event.getX() - visibleLeft;
+                        dragTouchOffsetY = event.getY() - visibleTop;
+
+                        // Lift block upward so finger doesn't hide it
+                        dragLiftY = cellSize * 3f;
+
                         block.scale = 1.0f;
+                        block.targetScale = 1.0f;
+
                         invalidate();
-                        break;
+                        return true;
                     }
                 }
                 break;
 
             case MotionEvent.ACTION_MOVE:
                 if (draggingBlock != null) {
-                    draggingBlock.x = event.getX() - (draggingBlock.getWidth() * cellSize / 2f);
-                    draggingBlock.y = event.getY() - dragOffsetY;
+                    draggingBlock.x = event.getX() - dragTouchOffsetX;
+                    draggingBlock.y = event.getY() - dragTouchOffsetY - dragLiftY;
+
                     invalidate();
+                    return true;
                 }
                 break;
 
@@ -428,59 +402,62 @@ public class GameView extends View {
                     placeBlock(draggingBlock);
                     draggingBlock = null;
                     invalidate();
+                    performClick();
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                if (draggingBlock != null) {
+                    draggingBlock.x = draggingBlock.startX;
+                    draggingBlock.y = draggingBlock.startY;
+                    draggingBlock.scale = 0.6f;
+                    draggingBlock.targetScale = 0.6f;
+                    draggingBlock = null;
+                    invalidate();
+                    return true;
                 }
                 break;
         }
-        return true;
+        return super.onTouchEvent(event);
     }
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
 
-    private void placeBlock(com.example.blockpuzzlegame.Block block) {
+    private void placeBlock(Block block) {
         int col = Math.round((block.x - gridMargin) / cellSize);
         int row = Math.round((block.y - gridMargin) / cellSize);
 
-
         if (canPlace(block, row, col)) {
-
             lastPlacedCells.clear();
             for (int i = 0; i < block.shape.length; i++) {
                 for (int j = 0; j < block.shape[0].length; j++) {
                     if (block.shape[i][j] == 1) {
                         grid[row + i][col + j] = block.color;
-
-                        int r = row + i;
-                        int c = col + j;
-
-                        lastPlacedCells.add(new int[]{r, c});
-
+                        lastPlacedCells.add(new int[]{row + i, col + j});
                     }
                 }
             }
 
             //  Placement score based on block size
             int blockCells = countBlockCells(block);
-
-// scale with game progress
             int placementScore = blockCells * (1 + score / 500);
 
             score += placementScore;
-// Notify UI
             if (scoreListener != null) {
                 scoreListener.onScoreChanged(score);
             }
 
-
             block.isUsed = true;
-
             soundManager.playPlace();
             clearCompletedLines();
-           // generateBlocks();
 
             if (allBlocksUsed()) {
                 generateBlocks();
             }
-        }
-        else {
+        } else {
             block.x = block.startX;
             block.y = block.startY;
 
@@ -491,9 +468,6 @@ public class GameView extends View {
             soundManager.playDrop();
         }
 
-
-
-
         postDelayed(() -> {
             if (!canAnyBlockFit()) {
                 isGameOver = true;
@@ -503,10 +477,6 @@ public class GameView extends View {
                 }
             }
         }, 180);
-
-
-        animatePlacement();
-
     }
 
     private boolean allBlocksUsed() {
@@ -518,11 +488,9 @@ public class GameView extends View {
         return true;
     }
 
-
-    private boolean canPlace(com.example.blockpuzzlegame.Block block, int row, int col) {
+    private boolean canPlace(Block block, int row, int col) {
         for (int i = 0; i < block.shape.length; i++) {
             for (int j = 0; j < block.shape[0].length; j++) {
-
                 if (block.shape[i][j] == 1) {
                     int r = row + i;
                     int c = col + j;
@@ -532,271 +500,237 @@ public class GameView extends View {
 
                     if (grid[r][c] != EMPTY)
                         return false;
-
                 }
             }
         }
         return true;
     }
 
-
-
     public void generateBlocks() {
-
-        float spacing = cellSize * 0.4f; // smaller & natural gap
+        float spacing = cellSize * 0.4f;
         float startY = gridMargin + rows * cellSize + (cellSize * 2.5f);
 
-        //  Create blocks first
         for (int i = 0; i < 3; i++) {
-
-            int[][] selectedShape = getRandomShape();
+            int[][] selectedShape;
+            
+            if (useReviveBlocks) {
+                selectedShape = new int[][]{{1}}; // Forced 1x1 for revive
+            } else {
+                selectedShape = getRandomShape();
+            }
 
             int colorIndex = (int) (Math.random() * colors.length);
-
             availableBlocks[i] = new Block(
                     selectedShape,
                     colors[colorIndex]
             );
-
             availableBlocks[i].isUsed = false;
         }
 
+        useReviveBlocks = false;
+        layoutAvailableBlocks(spacing, startY);
+    }
 
-        //  Calculate total width using REAL block sizes
+    private void layoutAvailableBlocks(float spacing, float startY) {
         float totalWidth = 0;
         for (int i = 0; i < 3; i++) {
             totalWidth += availableBlocks[i].getWidth() * cellSize * 0.6f;
             if (i < 2) totalWidth += spacing;
         }
 
-        //  Center horizontally
-        float startX = (getWidth() - totalWidth) / 2f;
-
-
-        // Position blocks (BOTTOM ALIGNED)
-        float currentX = startX;
+        float currentX = (getWidth() - totalWidth) / 2f;
 
         for (int i = 0; i < 3; i++) {
-
             Block block = availableBlocks[i];
-
             block.scale = 0.6f;
             block.targetScale = 0.6f;
-
             block.x = currentX;
 
-            // ⭐ KEY FIX: align by bottom
             float blockHeight = block.getHeight() * cellSize * block.scale;
             block.y = startY - blockHeight;
 
-            // save original position (for snap-back)
             block.startX = block.x;
             block.startY = block.y;
 
             currentX += block.getWidth() * cellSize * 0.6f + spacing;
         }
+    }
 
+    public void performRevive() {
+        isGameOver = false;
+        useReviveBlocks = true;
+        draggingBlock = null;
+        generateBlocks();
+        invalidate();
     }
 
     private int[][] getRandomShape() {
-
         int emptyCells = countEmptyCells();
 
-        // If board almost full → give small shapes
         if (emptyCells < 15) {
             return easyShapes[(int)(Math.random() * 3)];
         }
 
-        // Difficulty based on score
-        if (score < 200) {
+        if (score < 1000) {
             return easyShapes[(int)(Math.random() * easyShapes.length)];
         }
 
-        if (score < 500) {
-            int total = easyShapes.length + mediumShapes.length;
-            int rand = (int)(Math.random() * total);
-
-            if (rand < easyShapes.length)
-                return easyShapes[rand];
-            else
-                return mediumShapes[rand - easyShapes.length];
+        if (score < 1500) {
+            if (Math.random() < 0.7) {
+                return easyShapes[(int)(Math.random() * easyShapes.length)];
+            } else {
+                return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+            }
         }
 
-        // 500+ score → allow all shapes
-        int total = easyShapes.length + mediumShapes.length;
-        int rand = (int)(Math.random() * total);
-
-        if (rand < easyShapes.length)
-            return easyShapes[rand];
-        else
-            return mediumShapes[rand - easyShapes.length];
+        if (Math.random() < 0.5) {
+            return easyShapes[(int)(Math.random() * easyShapes.length)];
+        } else {
+            return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+        }
     }
 
+    private boolean isTouchInsideBlock(MotionEvent e, Block block) {
+        float fullWidth = block.getWidth() * cellSize;
+        float fullHeight = block.getHeight() * cellSize;
 
+        float scaledWidth = fullWidth * block.scale;
+        float scaledHeight = fullHeight * block.scale;
 
+        float left = block.x + (fullWidth - scaledWidth) / 2f;
+        float top = block.y + (fullHeight - scaledHeight) / 2f;
+        float right = left + scaledWidth;
+        float bottom = top + scaledHeight;
 
-    private boolean isTouchInsideBlock(MotionEvent e, com.example.blockpuzzlegame.Block block) {
-        float width = block.getWidth() * cellSize * block.scale;
-        float height = block.getHeight() * cellSize * block.scale;
+        float touchPadding = cellSize * 0.30f;
 
-        return e.getX() >= block.x && e.getX() <= block.x + width &&
-                e.getY() >= block.y && e.getY() <= block.y + height;
+        return e.getX() >= left - touchPadding &&
+                e.getX() <= right + touchPadding &&
+                e.getY() >= top - touchPadding &&
+                e.getY() <= bottom + touchPadding;
+    }
+
+    private float getStreakMultiplier(int streak) {
+        if (streak <= 1) return 1.0f;
+        if (streak == 2) return 1.2f;
+        if (streak == 3) return 1.5f;
+        return 2.0f;
     }
 
     private void clearCompletedLines() {
-
-
         for (int i = 0; i < rows; i++) highlightRows[i] = false;
         for (int j = 0; j < cols; j++) highlightCols[j] = false;
 
-
-        // Detect full rows
+        int clearedRows = 0;
         for (int i = 0; i < rows; i++) {
             boolean full = true;
             for (int j = 0; j < cols; j++) {
-                if (grid[i][j] == EMPTY)
-                {
+                if (grid[i][j] == EMPTY) {
                     full = false;
                     break;
                 }
             }
-            if (full) highlightRows[i] = true;
+            if (full) {
+                highlightRows[i] = true;
+                clearedRows++;
+            }
         }
 
-// Detect full columns
+        int clearedCols = 0;
         for (int j = 0; j < cols; j++) {
             boolean full = true;
             for (int i = 0; i < rows; i++) {
-                if (grid[i][j] == EMPTY)
-                {
+                if (grid[i][j] == EMPTY) {
                     full = false;
                     break;
                 }
             }
-            if (full) highlightCols[j] = true;
+            if (full) {
+                highlightCols[j] = true;
+                clearedCols++;
+            }
         }
 
         postDelayed(this::clearHighlightedLines, 120);
 
-
-        int clearedLines = 0;
-
-// Count cleared rows
-        for (int i = 0; i < rows; i++) {
-            if (highlightRows[i]) {
-                clearedLines++;
-            }
-        }
-
-// Count cleared columns
-        for (int j = 0; j < cols; j++) {
-            if (highlightCols[j]) {
-                clearedLines++;
-            }
-        }
-
-
-        //  NEW Smart Coin Logic
-
-        int clearedRows = 0;
-        int clearedCols = 0;
-
-        for (int i = 0; i < rows; i++) {
-            if (highlightRows[i]) clearedRows++;
-        }
-
-        for (int j = 0; j < cols; j++) {
-            if (highlightCols[j]) clearedCols++;
-        }
-
+        int totalCleared = clearedRows + clearedCols;
         int earnedCoins = 0;
 
-// Condition 1: 3 or more total lines
-        if (clearedLines >= 3) {
+        if (totalCleared >= 3) {
             earnedCoins = 5;
-        }
-// Condition 2: At least 1 row AND 1 column cleared together
-        else if (clearedRows > 0 && clearedCols > 0) {
+        } else if (clearedRows > 0 && clearedCols > 0) {
             earnedCoins = 3;
         }
 
         if (earnedCoins > 0) {
-
             if (coinListener != null) {
                 coinListener.onCoinsEarned(earnedCoins);
             }
-
             soundManager.playCoinEarn();
         }
 
-
-        // Score logic
-        if (clearedLines > 0) {
-
+        if (totalCleared > 0) {
             comboCount++;
-            if (comboCount > MAX_COMBO) comboCount = MAX_COMBO;
-
-            int multiplier = comboCount;
+            float multiplier = getStreakMultiplier(comboCount);
             int baseLineScore = 50;
 
-// multi-line bonus
-            int lineBonus = clearedLines * clearedLines * baseLineScore;
-
-// combo multiplier
-            int comboBonus = comboCount * 20;
-
-// late game scaling
-            int difficultyBonus = Math.min(score / 2000, 5);
-
-            int gainedScore = (lineBonus + comboBonus) * (1 + difficultyBonus);
-
-            if (clearedLines >= 2) {
-                gainedScore += 100 * comboCount;
+            int lineScore = totalCleared * baseLineScore;
+            if (totalCleared >= 2) {
+                lineScore += (totalCleared * 100);
             }
+
+            int difficultyBonus = Math.min(score / 2000, 5);
+            int gainedScore = (int) (lineScore * multiplier * (1 + difficultyBonus));
 
             soundManager.playClear();
-
             score += gainedScore;
-
-            final int finalScoreToShow = gainedScore;   //  make final copy
-
-            if (comboCount > 1) {
-                showComboText(comboCount);
-
-                postDelayed(() -> {
-                    showScoreText(finalScoreToShow);
-                    invalidate();
-                }, 200);
-            } else {
-                showScoreText(gainedScore);
-            }
-
 
             if (scoreListener != null) {
                 scoreListener.onScoreChanged(score);
             }
-        }
-        else {
-            //  No clear → combo reset
+
+            showComboFeedback(totalCleared, comboCount, gainedScore);
+        } else {
             comboCount = 0;
         }
-
-
-
-        clearAlpha = 100;
-        postDelayed(() -> {
-            clearAlpha = 255;
-            invalidate();
-        }, 120);
-
 
         invalidate();
     }
 
+    private void showComboFeedback(int lines, int streak, int scoreValue) {
+        String msg = "";
+        int color = Color.WHITE;
+
+        if (streak >= 6) {
+            msg = "LEGENDARY!";
+            color = Color.parseColor("#F44336"); // Red
+        } else if (streak == 5) {
+            msg = "UNSTOPPABLE!";
+            color = Color.parseColor("#E040FB"); // Purple
+        } else if (streak == 4) {
+            msg = "PERFECT!";
+            color = Color.parseColor("#00E5FF"); // Cyan
+        } else if (lines >= 3) {
+            msg = "COMBO x" + lines + " \uD83D\uDD25";
+            color = Color.parseColor("#FF5722"); // Deep Orange
+        } else if (lines == 2) {
+            msg = "GREAT!";
+            color = Color.parseColor("#FFC107"); // Amber
+        } else if (streak == 2) {
+            msg = "NICE!";
+            color = Color.parseColor("#4CAF50"); // Green
+        }
+
+        if (!msg.isEmpty()) {
+            showComboText(msg, color, streak);
+            postDelayed(() -> showScoreText(scoreValue), 250);
+        } else {
+            showScoreText(scoreValue);
+        }
+    }
+
     private boolean canAnyBlockFit() {
-
         for (Block block : availableBlocks) {
-
             if (block == null || block.isUsed) continue;
 
             int blockHeight = block.shape.length;
@@ -804,89 +738,51 @@ public class GameView extends View {
 
             for (int row = 0; row <= rows - blockHeight; row++) {
                 for (int col = 0; col <= cols - blockWidth; col++) {
-
                     if (canPlace(block, row, col)) {
                         return true;
                     }
                 }
             }
         }
-
         return false;
     }
 
-
-
-
     public interface GameOverListener {
         void onGameOver(int finalScore);
-
     }
 
     private GameOverListener gameOverListener;
 
     public void setGameOverListener(GameOverListener listener) {
         this.gameOverListener = listener;
-
-    }
-
-
-    private void animatePlacement() {
-        /* animationScale = 0.8f;
-
-        postDelayed(() -> {
-            animationScale = 1f;
-            invalidate();
-        }, 100); */
     }
 
     private void clearHighlightedLines() {
-
-        int cleared = 0;
-
         for (int i = 0; i < rows; i++) {
             if (highlightRows[i]) {
-
                 for (int[] cell : lastPlacedCells) {
-                    if (cell[0] == i) { // same row
-
+                    if (cell[0] == i) {
                         float cx = gridMargin + cell[1] * cellSize + cellSize / 2f;
                         float cy = gridMargin + cell[0] * cellSize + cellSize / 2f;
-
                         spawnParticles(cx, cy, 25, Color.CYAN);
                     }
                 }
-
                 for (int j = 0; j < cols; j++) grid[i][j] = EMPTY;
             }
         }
 
-
         for (int j = 0; j < cols; j++) {
             if (highlightCols[j]) {
-
                 for (int[] cell : lastPlacedCells) {
-                    if (cell[1] == j) { // same column
-
+                    if (cell[1] == j) {
                         float cx = gridMargin + cell[1] * cellSize + cellSize / 2f;
                         float cy = gridMargin + cell[0] * cellSize + cellSize / 2f;
-
                         spawnParticles(cx, cy, 25, Color.CYAN);
                     }
                 }
-
                 for (int i = 0; i < rows; i++) grid[i][j] = EMPTY;
             }
         }
-
-
-
-       /* if (cleared > 0) {
-            score += cleared * 10;
-            if (scoreListener != null)
-                scoreListener.onScoreChanged(score);
-        } */
-
         invalidate();
     }
 
@@ -896,21 +792,17 @@ public class GameView extends View {
         if (soundManager != null) soundManager.release();
     }
 
-    private class FloatingText {
+    private static class FloatingText {
         static final int TYPE_SCORE = 0;
         static final int TYPE_COMBO = 1;
 
         float startX, startY;
         float targetX, targetY;
-
         String text;
-
         long startTime;
         long duration;
-
         int fillColor;
         int strokeColor;
-
         float textSize;
         int type;
     }
@@ -920,15 +812,14 @@ public class GameView extends View {
     }
 
     private float getScoreY() {
-        return gridMargin * 0.7f; // just above board
+        return gridMargin * 0.7f;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        gridMargin = w * 0.06f; // 6% margin on left & right
-
+        gridMargin = w * 0.06f;
         cellSize = (int) ((w - 2 * gridMargin) / cols);
 
         slotGap = cellSize * 0.025f;
@@ -941,27 +832,20 @@ public class GameView extends View {
         generateBlocks();
     }
 
-
     private void drawBoard(Canvas canvas) {
-
         float boardLeft = gridMargin;
         float boardTop = gridMargin;
         float boardRight = gridMargin + cols * cellSize;
         float boardBottom = gridMargin + rows * cellSize;
 
-        // Subtle Shadow under the board
         Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         shadowPaint.setColor(Color.BLACK);
         shadowPaint.setAlpha(60);
         canvas.drawRoundRect(boardLeft + 10, boardTop + 10, boardRight + 10, boardBottom + 10, boardRadius, boardRadius, shadowPaint);
 
-        // Board background
         canvas.drawRoundRect(boardLeft, boardTop, boardRight, boardBottom, boardRadius, boardRadius, boardPaint);
-
-        // Board border
         canvas.drawRoundRect(boardLeft, boardTop, boardRight, boardBottom, boardRadius, boardRadius, boardBorderPaint);
 
-        // Empty slots
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 float left   = gridMargin + j * cellSize + slotGap;
@@ -973,8 +857,6 @@ public class GameView extends View {
             }
         }
     }
-
-
 
     private int lighten(int color) {
         return Color.argb(
@@ -994,40 +876,29 @@ public class GameView extends View {
         );
     }
 
-    private void showComboText(int combo) {
-
+    private void showComboText(String message, int color, int streak) {
         FloatingText ft = new FloatingText();
         ft.type = FloatingText.TYPE_COMBO;
-        ft.text = "COMBO x" + combo;
+        ft.text = message;
 
         ft.startX = gridMargin + (cols * cellSize) / 2f;
         ft.startY = gridMargin + (rows * cellSize) / 2f;
 
         ft.targetX = ft.startX;
-        ft.targetY = ft.startY - cellSize * 1.5f;
+        ft.targetY = ft.startY - cellSize * 2.2f;
 
         ft.startTime = System.currentTimeMillis();
-        ft.duration = 1000;
+        ft.duration = 1000 + Math.min(streak * 100L, 1000L);
 
-        // Dynamic colors for combos
-        int[] comboColors = {
-            Color.parseColor("#4CAF50"), // Green
-            Color.parseColor("#FFC107"), // Amber
-            Color.parseColor("#FF9800"), // Orange
-            Color.parseColor("#FF5722"), // Deep Orange
-            Color.parseColor("#F44336")  // Red
-        };
-        ft.fillColor = comboColors[Math.min(combo - 2, comboColors.length - 1)];
+        ft.fillColor = color;
         ft.strokeColor = Color.BLACK;
 
-        ft.textSize = cellSize * 1.2f;
+        ft.textSize = cellSize * (1.1f + Math.min(streak * 0.1f, 0.6f));
 
         floatingTexts.add(ft);
     }
 
-
     private void showScoreText(int scoreValue) {
-
         FloatingText ft = new FloatingText();
         ft.type = FloatingText.TYPE_SCORE;
         ft.text = "+" + scoreValue;
@@ -1051,7 +922,7 @@ public class GameView extends View {
         floatingTexts.add(ft);
     }
 
-    class Particle {
+    private static class Particle {
         float x, y;
         float vx, vy;
         float radius;
@@ -1061,10 +932,8 @@ public class GameView extends View {
     }
 
     private void spawnParticles(float cx, float cy, int count, int color) {
-
         for (int i = 0; i < count; i++) {
             Particle p = new Particle();
-
             p.x = cx;
             p.y = cy;
 
@@ -1084,7 +953,6 @@ public class GameView extends View {
 
     private int countEmptyCells() {
         int empty = 0;
-
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (grid[i][j] == EMPTY) empty++;
@@ -1111,7 +979,6 @@ public class GameView extends View {
     }
 
     private float[] getLastPlacedBlockCenter() {
-
         if (lastPlacedCells.isEmpty())
             return new float[]{getWidth()/2f, getHeight()/2f};
 
@@ -1119,10 +986,8 @@ public class GameView extends View {
         float sumY = 0;
 
         for (int[] cell : lastPlacedCells) {
-
             float cx = gridMargin + cell[1] * cellSize + cellSize / 2f;
             float cy = gridMargin + cell[0] * cellSize + cellSize / 2f;
-
             sumX += cx;
             sumY += cy;
         }

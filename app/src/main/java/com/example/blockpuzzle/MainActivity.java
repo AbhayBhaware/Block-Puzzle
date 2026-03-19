@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -200,6 +199,8 @@ public class MainActivity extends AppCompatActivity {
             } else if (id==R.id.restartlinearlayout)
             {
                 Toast.makeText(MainActivity.this, "Restart clicked", Toast.LENGTH_SHORT).show();
+                popupWindow.dismiss();
+                restartGame();
             }
 
         };
@@ -241,10 +242,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         continueBtn.setOnClickListener(v -> {
-            if (coins>=200)
+            if (coins>=10)
             {
-                int oldCoins = coins;
-                coins -= 200;
+                coins -= 10;
 
                 prefs.edit().putInt(KEY_COINS, coins).apply();
 
@@ -256,10 +256,7 @@ public class MainActivity extends AppCompatActivity {
                 popupWindow.dismiss();
                 dimBackground.setVisibility(View.GONE);
 
-                gameView.resumeGame();
-
-                gameView.generateBlocks();
-
+                gameView.performRevive();
             }
             else
             {

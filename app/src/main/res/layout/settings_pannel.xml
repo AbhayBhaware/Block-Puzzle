@@ -62,9 +62,7 @@
             <TextView
                 style="@style/MenuTextStyle"
                 android:text="Music" />
-            <CheckBox
-                android:id="@+id/musicCheck"
-                style="@style/MenuCheckBoxStyle" />
+            />
         </LinearLayout>
 
         <!-- Sound Option -->
@@ -79,9 +77,7 @@
             <TextView
                 style="@style/MenuTextStyle"
                 android:text="Sound" />
-            <CheckBox
-                android:id="@+id/soundCheck"
-                style="@style/MenuCheckBoxStyle" />
+            />
         </LinearLayout>
 
         <!-- Share Option -->

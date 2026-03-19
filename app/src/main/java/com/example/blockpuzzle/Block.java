@@ -1,4 +1,4 @@
-package com.example.blockpuzzlegame;
+package com.example.blockpuzzle;
 
 public class Block {
 
