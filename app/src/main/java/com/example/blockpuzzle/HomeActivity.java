@@ -1,6 +1,5 @@
 package com.example.blockpuzzle;
 
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -11,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -19,14 +19,15 @@ import android.widget.Toast;
 public class HomeActivity extends AppCompatActivity {
 
     CardView classicbtn, settingbtn, levelbtn;
-
     View dimBackground;
-
 
     private static final String PREFS_NAME = "BlockPuzzlePrefs";
     private static final String KEY_HIGH_SCORE = "high_score";
     private static final String KEY_COINS = "coins";
-
+    private static final String KEY_MUSIC_ON = "music_on";
+    private boolean doubleBackToExitPressedOnce = false;
+    private android.os.Handler backPressHandler = new android.os.Handler();
+    private final Runnable resetBackPress = () -> doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,27 +35,32 @@ public class HomeActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(Color.parseColor("#0D1231"));
         setContentView(R.layout.activity_home);
 
-        classicbtn=findViewById(R.id.classicbtn);
-        settingbtn=findViewById(R.id.settingbtn);
-        levelbtn=findViewById(R.id.levelbtn);
-        dimBackground=findViewById(R.id.dimBackground);
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        boolean isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, true);
+        if (isMusicOn) {
+            MusicManager.startMusic(this);
+        }
+
+        classicbtn = findViewById(R.id.classicbtn);
+        settingbtn = findViewById(R.id.settingbtn);
+        levelbtn = findViewById(R.id.levelbtn);
+        dimBackground = findViewById(R.id.dimBackground);
 
         TextView highScoreText = findViewById(R.id.highScoreHome);
-        TextView coinText=findViewById(R.id.coinstextHome);
+        TextView coinText = findViewById(R.id.coinstextHome);
 
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int highScore = prefs.getInt(KEY_HIGH_SCORE, 0);
         int coins = prefs.getInt(KEY_COINS, 0);
 
         highScoreText.setText(String.valueOf(highScore));
         coinText.setText(String.valueOf(coins));
 
-
         classicbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 animateButton(v);
-                Intent i=new Intent(HomeActivity.this, MainActivity.class);
+                Intent i = new Intent(HomeActivity.this, MainActivity.class);
                 startActivity(i);
             }
         });
@@ -63,11 +69,21 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animateButton(v);
-                View popupView=getLayoutInflater().inflate(R.layout.settings_pannel,null);
+
+                View popupView = getLayoutInflater().inflate(R.layout.settings_pannel, null);
+
+                ImageView musicIcon = popupView.findViewById(R.id.musicIcon);
+
+                boolean currentMusicState = prefs.getBoolean(KEY_MUSIC_ON, true);
+                if (currentMusicState) {
+                    musicIcon.setImageResource(R.drawable.musicon);
+                } else {
+                    musicIcon.setImageResource(R.drawable.musicoff);
+                }
 
                 int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
 
-                PopupWindow popupWindow=new PopupWindow(
+                PopupWindow popupWindow = new PopupWindow(
                         popupView,
                         width,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -78,13 +94,12 @@ public class HomeActivity extends AppCompatActivity {
                 popupWindow.setElevation(10);
                 popupWindow.setOutsideTouchable(true);
 
-
                 dimBackground.setAlpha(0f);
                 dimBackground.setVisibility(View.VISIBLE);
                 dimBackground.animate().alpha(1f).setDuration(200);
 
                 dimBackground.setOnClickListener(view -> {
-                    // Do nothing – just block outside touches
+                    // block outside touches
                 });
 
                 popupWindow.showAtLocation(
@@ -103,25 +118,37 @@ public class HomeActivity extends AppCompatActivity {
                     popupWindow.dismiss();
                 });
 
+                View.OnClickListener menuClickListner = view -> {
+                    int id = view.getId();
 
-                View.OnClickListener menuClickListner = view-> {
-                    int id=view.getId();
+                    if (id == R.id.musiclinearlayout) {
 
-                    if (id==R.id.musiclinearlayout)
-                    {
-                        Toast.makeText(HomeActivity.this, "Music clicked", Toast.LENGTH_SHORT).show();
-                    } else if (id==R.id.soundlinearlayout)
-                    {
+                        boolean currentState = prefs.getBoolean(KEY_MUSIC_ON, true);
+                        boolean newState = !currentState;
+
+                        prefs.edit().putBoolean(KEY_MUSIC_ON, newState).apply();
+
+                        if (newState) {
+                            MusicManager.startMusic(HomeActivity.this);
+                            musicIcon.setImageResource(R.drawable.musicon);
+                            Toast.makeText(HomeActivity.this, "Music ON 🎵", Toast.LENGTH_SHORT).show();
+                        } else {
+                            MusicManager.pauseMusic();
+                            musicIcon.setImageResource(R.drawable.musicoff);
+                            Toast.makeText(HomeActivity.this, "Music OFF 🔇", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else if (id == R.id.soundlinearlayout) {
                         Toast.makeText(HomeActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
-                    } else if (id==R.id.sharelinearlayout)
-                    {
-                        Toast.makeText(HomeActivity.this, "Share Clicked", Toast.LENGTH_SHORT).show();
-                    } else if (id==R.id.rateuslinearlayout)
-                    {
-                        Toast.makeText(HomeActivity.this, "rate us clicked", Toast.LENGTH_SHORT).show();
-                    }
 
+                    } else if (id == R.id.sharelinearlayout) {
+                        Toast.makeText(HomeActivity.this, "Share Clicked", Toast.LENGTH_SHORT).show();
+
+                    } else if (id == R.id.rateuslinearlayout) {
+                        Toast.makeText(HomeActivity.this, "Rate us clicked", Toast.LENGTH_SHORT).show();
+                    }
                 };
+
                 popupView.findViewById(R.id.musiclinearlayout).setOnClickListener(menuClickListner);
                 popupView.findViewById(R.id.soundlinearlayout).setOnClickListener(menuClickListner);
                 popupView.findViewById(R.id.sharelinearlayout).setOnClickListener(menuClickListner);
@@ -136,9 +163,6 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(HomeActivity.this, "Coming soon...", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
     }
 
     @Override
@@ -156,8 +180,6 @@ public class HomeActivity extends AppCompatActivity {
         highScoreText.setText(String.valueOf(highScore));
     }
 
-
-
     private void animateButton(View view) {
         view.animate()
                 .scaleX(0.95f)
@@ -171,4 +193,23 @@ public class HomeActivity extends AppCompatActivity {
                 );
     }
 
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+
+        backPressHandler.removeCallbacks(resetBackPress);
+        backPressHandler.postDelayed(resetBackPress, 2000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        backPressHandler.removeCallbacks(resetBackPress);
+    }
 }

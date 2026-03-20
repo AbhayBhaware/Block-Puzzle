@@ -37,6 +37,7 @@ public class SoundManager {
         coinEarnSound = soundPool.load(context, R.raw.coinearned, 1);
 
 
+
     }
 
     public void playPlace() {
@@ -60,6 +61,7 @@ public class SoundManager {
     public void playCoinEarn() {
         soundPool.play(coinEarnSound, 1, 1, 0, 0, 1);
     }
+
 
 
 

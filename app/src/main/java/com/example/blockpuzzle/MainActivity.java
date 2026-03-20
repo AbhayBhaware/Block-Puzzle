@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_HIGH_SCORE = "high_score";
 
     private static final String KEY_COINS = "coins";
+    private static final String KEY_MUSIC_ON = "music_on";
 
     TextView coinText;
     int coins;
@@ -145,6 +147,18 @@ public class MainActivity extends AppCompatActivity {
 
         View popupView=getLayoutInflater().inflate(R.layout.menu_pannel,null);
 
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        ImageView musicIcon = popupView.findViewById(R.id.musicIcon);
+
+        boolean isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, true);
+
+        if (isMusicOn) {
+            musicIcon.setImageResource(R.drawable.musicon);
+        } else {
+            musicIcon.setImageResource(R.drawable.musicoff);
+        }
+
         int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.85);
 
         PopupWindow popupWindow=new PopupWindow(
@@ -187,9 +201,22 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener menuClickListner = view-> {
             int id=view.getId();
 
-            if (id==R.id.musiclinearlayout)
-            {
-                Toast.makeText(MainActivity.this, "Music clicked", Toast.LENGTH_SHORT).show();
+            if (id == R.id.musiclinearlayout) {
+
+                boolean currentState = prefs.getBoolean(KEY_MUSIC_ON, true);
+                boolean newState = !currentState;
+
+                prefs.edit().putBoolean(KEY_MUSIC_ON, newState).apply();
+
+                if (newState) {
+                    MusicManager.startMusic(MainActivity.this);
+                    musicIcon.setImageResource(R.drawable.musicon);
+                    Toast.makeText(MainActivity.this, "Music ON 🎵", Toast.LENGTH_SHORT).show();
+                } else {
+                    MusicManager.pauseMusic();
+                    musicIcon.setImageResource(R.drawable.musicoff);
+                    Toast.makeText(MainActivity.this, "Music OFF 🔇", Toast.LENGTH_SHORT).show();
+                }
             } else if (id==R.id.soundlinearlayout)
             {
                 Toast.makeText(MainActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
@@ -346,6 +373,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
         animator.start();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (soundManager != null) {
+            soundManager.release();
+        }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Quit Game")
+                .setMessage("Are you sure you want to quit the game?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setCancelable(true)
+                .setPositiveButton("Yes", (dialog, which) -> finish())
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .show();
     }
 
 
