@@ -220,9 +220,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (id==R.id.soundlinearlayout)
             {
                 Toast.makeText(MainActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
-            } else if (id==R.id.homelinearlayout)
-            {
-                Toast.makeText(MainActivity.this, "Home Clicked", Toast.LENGTH_SHORT).show();
+            } else if (id == R.id.homelinearlayout) {
+                popupWindow.dismiss();
+                showQuitGameDialog();
             } else if (id==R.id.restartlinearlayout)
             {
                 Toast.makeText(MainActivity.this, "Restart clicked", Toast.LENGTH_SHORT).show();
@@ -387,6 +387,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        showQuitGameDialog();
+    }
+
+    private void showQuitGameDialog() {
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Quit Game")
                 .setMessage("Are you sure you want to quit the game?")

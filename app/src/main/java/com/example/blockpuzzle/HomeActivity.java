@@ -141,11 +141,35 @@ public class HomeActivity extends AppCompatActivity {
                     } else if (id == R.id.soundlinearlayout) {
                         Toast.makeText(HomeActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
 
-                    } else if (id == R.id.sharelinearlayout) {
-                        Toast.makeText(HomeActivity.this, "Share Clicked", Toast.LENGTH_SHORT).show();
+                    }else if (id == R.id.sharelinearlayout) {
 
+                        String shareMessage = "🎮 I'm playing this amazing Block Puzzle game!\n\n" +
+                                "Can you beat my score? 😎🔥\n\n" +
+                                "Download now:\n" +
+                                "https://play.google.com/store/apps/details?id=" + getPackageName();
+
+                        android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareMessage);
+
+                        startActivity(android.content.Intent.createChooser(shareIntent, "Share via"));
                     } else if (id == R.id.rateuslinearlayout) {
-                        Toast.makeText(HomeActivity.this, "Rate us clicked", Toast.LENGTH_SHORT).show();
+
+                        String packageName = getPackageName();
+
+                        try {
+                            // Open Play Store app
+                            startActivity(new android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    android.net.Uri.parse("market://details?id=" + packageName)
+                            ));
+                        } catch (android.content.ActivityNotFoundException e) {
+                            // If Play Store not installed, open in browser
+                            startActivity(new android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    android.net.Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)
+                            ));
+                        }
                     }
                 };
 
