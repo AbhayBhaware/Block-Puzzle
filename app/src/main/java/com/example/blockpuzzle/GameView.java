@@ -507,14 +507,13 @@ public class GameView extends View {
     }
 
     public void generateBlocks() {
-        float spacing = cellSize * 0.4f;
         float startY = gridMargin + rows * cellSize + (cellSize * 2.5f);
 
         for (int i = 0; i < 3; i++) {
             int[][] selectedShape;
-            
+
             if (useReviveBlocks) {
-                selectedShape = new int[][]{{1}}; // Forced 1x1 for revive
+                selectedShape = new int[][]{{1}};
             } else {
                 selectedShape = getRandomShape();
             }
@@ -528,31 +527,37 @@ public class GameView extends View {
         }
 
         useReviveBlocks = false;
-        layoutAvailableBlocks(spacing, startY);
+        layoutAvailableBlocks(startY);
     }
 
-    private void layoutAvailableBlocks(float spacing, float startY) {
-        float totalWidth = 0;
-        for (int i = 0; i < 3; i++) {
-            totalWidth += availableBlocks[i].getWidth() * cellSize * 0.6f;
-            if (i < 2) totalWidth += spacing;
-        }
+    private void layoutAvailableBlocks(float startY) {
+        float trayLeft = gridMargin;
+        float trayRight = getWidth() - gridMargin;
+        float trayWidth = trayRight - trayLeft;
 
-        float currentX = (getWidth() - totalWidth) / 2f;
+        float sectionWidth = trayWidth / 3f;
 
         for (int i = 0; i < 3; i++) {
             Block block = availableBlocks[i];
+            if (block == null) continue;
+
             block.scale = 0.6f;
             block.targetScale = 0.6f;
-            block.x = currentX;
 
-            float blockHeight = block.getHeight() * cellSize * block.scale;
-            block.y = startY - blockHeight;
+            float fullBlockWidth = block.getWidth() * cellSize;
+            float scaledBlockWidth = fullBlockWidth * block.scale;
+            float scaledBlockHeight = block.getHeight() * cellSize * block.scale;
+
+            float sectionLeft = trayLeft + i * sectionWidth;
+            float sectionCenterX = sectionLeft + sectionWidth / 2f;
+
+            float visibleLeft = sectionCenterX - scaledBlockWidth / 2f;
+
+            block.x = visibleLeft - (fullBlockWidth - scaledBlockWidth) / 2f;
+            block.y = startY - scaledBlockHeight;
 
             block.startX = block.x;
             block.startY = block.y;
-
-            currentX += block.getWidth() * cellSize * 0.6f + spacing;
         }
     }
 
@@ -996,6 +1001,12 @@ public class GameView extends View {
         float centerY = sumY / lastPlacedCells.size();
 
         return new float[]{centerX, centerY};
+    }
+
+    public void setSoundEnabled(boolean enabled) {
+        if (soundManager != null) {
+            soundManager.setSoundEnabled(enabled);
+        }
     }
 
 }

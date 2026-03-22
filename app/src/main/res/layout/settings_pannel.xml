@@ -71,6 +71,7 @@
             android:id="@+id/soundlinearlayout"
             style="@style/MenuOptionStyle">
             <ImageView
+                android:id="@+id/soundIcon"
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:src="@drawable/soundon"
@@ -78,7 +79,6 @@
             <TextView
                 style="@style/MenuTextStyle"
                 android:text="Sound" />
-            />
         </LinearLayout>
 
         <!-- Share Option -->

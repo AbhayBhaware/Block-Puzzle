@@ -29,6 +29,8 @@ public class HomeActivity extends AppCompatActivity {
     private android.os.Handler backPressHandler = new android.os.Handler();
     private final Runnable resetBackPress = () -> doubleBackToExitPressedOnce = false;
 
+    private static final String KEY_SOUND_ON = "sound_on";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +75,15 @@ public class HomeActivity extends AppCompatActivity {
                 View popupView = getLayoutInflater().inflate(R.layout.settings_pannel, null);
 
                 ImageView musicIcon = popupView.findViewById(R.id.musicIcon);
+                ImageView soundIcon = popupView.findViewById(R.id.soundIcon);
+
+                boolean isSoundOn = prefs.getBoolean(KEY_SOUND_ON, true);
+
+                if (isSoundOn) {
+                    soundIcon.setImageResource(R.drawable.soundon);
+                } else {
+                    soundIcon.setImageResource(R.drawable.soundoff);
+                }
 
                 boolean currentMusicState = prefs.getBoolean(KEY_MUSIC_ON, true);
                 if (currentMusicState) {
@@ -139,8 +150,19 @@ public class HomeActivity extends AppCompatActivity {
                         }
 
                     } else if (id == R.id.soundlinearlayout) {
-                        Toast.makeText(HomeActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
 
+                        boolean currentState = prefs.getBoolean(KEY_SOUND_ON, true);
+                        boolean newState = !currentState;
+
+                        prefs.edit().putBoolean(KEY_SOUND_ON, newState).apply();
+
+                        if (newState) {
+                            soundIcon.setImageResource(R.drawable.soundon);
+                            Toast.makeText(HomeActivity.this, "Sound ON 🔊", Toast.LENGTH_SHORT).show();
+                        } else {
+                            soundIcon.setImageResource(R.drawable.soundoff);
+                            Toast.makeText(HomeActivity.this, "Sound OFF 🔇", Toast.LENGTH_SHORT).show();
+                        }
                     }else if (id == R.id.sharelinearlayout) {
 
                         String shareMessage = "🎮 I'm playing this amazing Block Puzzle game!\n\n" +

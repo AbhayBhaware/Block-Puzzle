@@ -6,6 +6,8 @@ import android.media.SoundPool;
 
 public class SoundManager {
 
+    private boolean isSoundOn = true;
+
     private SoundPool soundPool;
 
     private int placeSound;
@@ -41,31 +43,48 @@ public class SoundManager {
     }
 
     public void playPlace() {
-        soundPool.play(placeSound, 1, 1, 0, 0, 1);
+        playSound(placeSound);
     }
 
     public void playDrop() {
-        soundPool.play(dropSound, 1, 1, 0, 0, 1);
+        playSound(dropSound);
     }
 
     public void playClear() {
-        soundPool.play(clearSound, 1, 1, 0, 0, 1);
+        playSound(clearSound);
     }
 
     public void playGameOver() {
-        soundPool.play(gameOverSound, 1, 1, 0, 0, 1);
+        playSound(gameOverSound);
     }
+
     public void playCoinSpend() {
-        soundPool.play(coinSpendSound, 1, 1, 0, 0, 1);
+        playSound(coinSpendSound);
     }
+
     public void playCoinEarn() {
-        soundPool.play(coinEarnSound, 1, 1, 0, 0, 1);
+        playSound(coinEarnSound);
+    }
+
+
+    public void setSoundEnabled(boolean enabled) {
+        isSoundOn = enabled;
+    }
+
+
+    private void playSound(int soundId) {
+        if (soundPool != null && isSoundOn) {
+            soundPool.play(soundId, 1, 1, 0, 0, 1);
+        }
     }
 
 
 
 
     public void release() {
-        soundPool.release();
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
+        }
     }
 }

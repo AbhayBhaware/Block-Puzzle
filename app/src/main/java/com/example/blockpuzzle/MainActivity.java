@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String KEY_COINS = "coins";
     private static final String KEY_MUSIC_ON = "music_on";
+    private static final String KEY_SOUND_ON = "sound_on";
 
     TextView coinText;
     int coins;
@@ -55,10 +56,18 @@ public class MainActivity extends AppCompatActivity {
         dimBackground = findViewById(R.id.dimBackground);
         soundManager = new SoundManager(this);
 
-
-
-
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        boolean isSoundOn = prefs.getBoolean(KEY_SOUND_ON, true);
+        soundManager.setSoundEnabled(isSoundOn);
+
+        gameView.setSoundEnabled(isSoundOn);
+
+
+
+
+
+
         coinText = findViewById(R.id.coinText);
         coins = prefs.getInt(KEY_COINS, 0);
         coinText.setText(String.valueOf(coins));
@@ -151,6 +160,17 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView musicIcon = popupView.findViewById(R.id.musicIcon);
 
+        ImageView soundIcon = popupView.findViewById(R.id.soundIcon);
+
+
+        boolean isSoundOn = prefs.getBoolean(KEY_SOUND_ON, true);
+
+        if (isSoundOn) {
+            soundIcon.setImageResource(R.drawable.soundon);
+        } else {
+            soundIcon.setImageResource(R.drawable.soundoff);
+        }
+
         boolean isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, true);
 
         if (isMusicOn) {
@@ -217,15 +237,29 @@ public class MainActivity extends AppCompatActivity {
                     musicIcon.setImageResource(R.drawable.musicoff);
                     Toast.makeText(MainActivity.this, "Music OFF 🔇", Toast.LENGTH_SHORT).show();
                 }
-            } else if (id==R.id.soundlinearlayout)
-            {
-                Toast.makeText(MainActivity.this, "Sound Clicked", Toast.LENGTH_SHORT).show();
+            } else if (id == R.id.soundlinearlayout) {
+
+                boolean currentState = prefs.getBoolean(KEY_SOUND_ON, true);
+                boolean newState = !currentState;
+
+                prefs.edit().putBoolean(KEY_SOUND_ON, newState).apply();
+
+                soundManager.setSoundEnabled(newState);
+                gameView.setSoundEnabled(newState);
+
+                if (newState) {
+                    soundIcon.setImageResource(R.drawable.soundon);
+                    Toast.makeText(MainActivity.this, "Sound ON 🔊", Toast.LENGTH_SHORT).show();
+                } else {
+                    soundIcon.setImageResource(R.drawable.soundoff);
+                    Toast.makeText(MainActivity.this, "Sound OFF 🔇", Toast.LENGTH_SHORT).show();
+                }
             } else if (id == R.id.homelinearlayout) {
                 popupWindow.dismiss();
                 showQuitGameDialog();
             } else if (id==R.id.restartlinearlayout)
             {
-                Toast.makeText(MainActivity.this, "Restart clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Game Restarted", Toast.LENGTH_SHORT).show();
                 popupWindow.dismiss();
                 restartGame();
             }

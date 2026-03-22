@@ -6,9 +6,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/logo1"
+        android:icon="@drawable/logo21"
         android:label="Block Blastify"
-        android:roundIcon="@drawable/logo1"
+        android:roundIcon="@drawable/logo21"
         android:supportsRtl="true"
         android:theme="@style/Theme.BlockPuzzle"
         tools:targetApi="31">
