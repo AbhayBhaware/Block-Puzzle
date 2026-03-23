@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="24dp"
         android:gravity="center_vertical">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/highScoreTextCard"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             app:cardBackgroundColor="@color/card_bg"
             app:cardCornerRadius="12dp"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:drawableLeft="@drawable/baseline_military_tech_24"
+                app:drawableStartCompat="@drawable/baseline_military_tech_24"
                 android:drawablePadding="8dp"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -45,7 +45,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cointextCard"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             app:cardBackgroundColor="@color/card_bg"
             app:cardCornerRadius="12dp"
@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:drawableLeft="@drawable/coinlogoo"
+                app:drawableStartCompat="@drawable/coinlogoo"
                 android:drawablePadding="8dp"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -72,7 +72,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/menuButton"
             android:layout_width="50dp"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/card_bg"
@@ -85,7 +85,8 @@
                 android:layout_height="24dp"
                 android:src="@drawable/menubtn"
                 android:layout_gravity="center"
-                app:tint="@color/white"/>
+                app:tint="@color/white"
+                android:contentDescription="Menu" />
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 
@@ -94,14 +95,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SCORE 0"
-        android:textSize="36sp"
+        android:textSize="32sp"
         android:textStyle="bold"
         android:textColor="@color/accent_neon"
         android:fontFamily="sans-serif-black"
         android:background="@drawable/score_bg"
         android:layout_below="@id/topBar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:letterSpacing="0.05"
@@ -112,8 +113,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/scoreText"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
 
     <!-- Dim Background Overlay -->
     <View

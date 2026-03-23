@@ -2,59 +2,44 @@ package com.example.blockpuzzle;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import androidx.core.content.ContextCompat;
 
 public class SplashActivity extends AppCompatActivity {
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable navigateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+            finish();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setNavigationBarColor(Color.parseColor("#0D1231"));
         setContentView(R.layout.activity_splash);
 
-        ImageView logo = findViewById(R.id.logo);
-        //TextView appName = findViewById(R.id.appname);
+        Window window = getWindow();
 
-       /* // Initial state
-        logo.setScaleX(0.6f);
-        logo.setScaleY(0.6f);
-        logo.setAlpha(0f);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setNavigationBarColor(Color.parseColor("#0D1231"));
+            window.setStatusBarColor(Color.parseColor("#0D1231"));
+        }
 
-        appName.setAlpha(0f);
-        appName.setTranslationY(20f);
+        handler.postDelayed(navigateRunnable, 2000);
+    }
 
-        // Logo animation
-        logo.animate()
-                .alpha(1f)
-                .scaleX(1f)
-                .scaleY(1f)
-                .setDuration(700)
-                .setStartDelay(200)
-                .start();
-
-        // Text animation
-        appName.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setDuration(600)
-                .setStartDelay(500)
-                .start(); */
-
-
-
-        // Move to Home screen
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
-            finish();
-        }, 2000);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(navigateRunnable);
     }
 }

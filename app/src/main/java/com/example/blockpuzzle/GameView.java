@@ -111,6 +111,8 @@ public class GameView extends View {
     private Paint boardBorderPaint;
     private Paint boardPaint;
     private Paint slotPaint;
+    private Paint shadowPaint;
+    private Paint highlightPaint;
 
     public interface CoinListener {
         void onCoinsEarned(int coins);
@@ -170,6 +172,15 @@ public class GameView extends View {
 
         slotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         slotPaint.setColor(Color.parseColor("#1F2238")); // empty slot
+
+        shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint.setColor(Color.BLACK);
+        shadowPaint.setAlpha(60);
+
+        highlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        highlightPaint.setStyle(Paint.Style.FILL);
+        highlightPaint.setColor(Color.WHITE);
+        highlightPaint.setAlpha(50);
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -312,10 +323,6 @@ public class GameView extends View {
         blockPaint.setShader(null);
 
         // Subtle Top Highlight (Bevel effect)
-        Paint highlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        highlightPaint.setStyle(Paint.Style.FILL);
-        highlightPaint.setColor(Color.WHITE);
-        highlightPaint.setAlpha(50);
         float hMargin = (right - left) * 0.15f;
         canvas.drawRoundRect(left + hMargin, top + hMargin, right - hMargin, top + hMargin * 2.2f, radius / 2, radius / 2, highlightPaint);
     }
@@ -843,9 +850,6 @@ public class GameView extends View {
         float boardRight = gridMargin + cols * cellSize;
         float boardBottom = gridMargin + rows * cellSize;
 
-        Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        shadowPaint.setColor(Color.BLACK);
-        shadowPaint.setAlpha(60);
         canvas.drawRoundRect(boardLeft + 10, boardTop + 10, boardRight + 10, boardBottom + 10, boardRadius, boardRadius, shadowPaint);
 
         canvas.drawRoundRect(boardLeft, boardTop, boardRight, boardBottom, boardRadius, boardRadius, boardPaint);
