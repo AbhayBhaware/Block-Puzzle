@@ -19,7 +19,7 @@ public class MusicManager implements DefaultLifecycleObserver {
             bgMusic = MediaPlayer.create(context.getApplicationContext(), R.raw.bg_music);
             if (bgMusic != null) {
                 bgMusic.setLooping(true);
-                bgMusic.setVolume(0.4f, 0.4f);
+                bgMusic.setVolume(0.2f, 0.2f);
             }
         }
 
