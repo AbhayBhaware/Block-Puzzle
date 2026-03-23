@@ -26,6 +26,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final String KEY_COINS = "coins";
     private static final String KEY_MUSIC_ON = "music_on";
     private boolean doubleBackToExitPressedOnce = false;
+    SoundManager soundManager;
     private android.os.Handler backPressHandler = new android.os.Handler();
     private final Runnable resetBackPress = () -> doubleBackToExitPressedOnce = false;
 
@@ -48,6 +49,11 @@ public class HomeActivity extends AppCompatActivity {
         settingbtn = findViewById(R.id.settingbtn);
         levelbtn = findViewById(R.id.levelbtn);
         dimBackground = findViewById(R.id.dimBackground);
+        soundManager = new SoundManager(this);
+
+        boolean isSoundOn = prefs.getBoolean(KEY_SOUND_ON, true);
+        soundManager.setSoundEnabled(isSoundOn);
+
 
         TextView highScoreText = findViewById(R.id.highScoreHome);
         TextView coinText = findViewById(R.id.coinstextHome);
@@ -61,6 +67,7 @@ public class HomeActivity extends AppCompatActivity {
         classicbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                soundManager.playClick();
                 animateButton(v);
                 Intent i = new Intent(HomeActivity.this, MainActivity.class);
                 startActivity(i);
@@ -70,6 +77,7 @@ public class HomeActivity extends AppCompatActivity {
         settingbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                soundManager.playClick();
                 animateButton(v);
 
                 View popupView = getLayoutInflater().inflate(R.layout.settings_pannel, null);
@@ -126,6 +134,7 @@ public class HomeActivity extends AppCompatActivity {
                 });
 
                 popupView.findViewById(R.id.closeButton).setOnClickListener(view -> {
+                    soundManager.playClick();
                     popupWindow.dismiss();
                 });
 
@@ -133,6 +142,8 @@ public class HomeActivity extends AppCompatActivity {
                     int id = view.getId();
 
                     if (id == R.id.musiclinearlayout) {
+
+                        soundManager.playClick();
 
                         boolean currentState = prefs.getBoolean(KEY_MUSIC_ON, true);
                         boolean newState = !currentState;
@@ -151,6 +162,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     } else if (id == R.id.soundlinearlayout) {
 
+                        soundManager.playClick();
                         boolean currentState = prefs.getBoolean(KEY_SOUND_ON, true);
                         boolean newState = !currentState;
 
@@ -205,6 +217,7 @@ public class HomeActivity extends AppCompatActivity {
         levelbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                soundManager.playClick();
                 animateButton(v);
                 Toast.makeText(HomeActivity.this, "Coming soon...", Toast.LENGTH_SHORT).show();
             }
@@ -257,5 +270,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         backPressHandler.removeCallbacks(resetBackPress);
+        if (soundManager != null) {
+            soundManager.release();
+        }
     }
 }

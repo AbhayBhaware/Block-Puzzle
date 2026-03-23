@@ -16,6 +16,7 @@ public class SoundManager {
     private int gameOverSound;
     private int coinSpendSound;
     private int coinEarnSound;
+    private int clickSound;
 
 
 
@@ -37,6 +38,7 @@ public class SoundManager {
         gameOverSound = soundPool.load(context, R.raw.game_over, 1);
         coinSpendSound = soundPool.load(context, R.raw.spend_coin, 1);
         coinEarnSound = soundPool.load(context, R.raw.coinearned, 1);
+        clickSound = soundPool.load(context, R.raw.clicksound, 1);
 
 
 
@@ -64,6 +66,10 @@ public class SoundManager {
 
     public void playCoinEarn() {
         playSound(coinEarnSound);
+    }
+
+    public void playClick() {
+        playSound(clickSound);
     }
 
 

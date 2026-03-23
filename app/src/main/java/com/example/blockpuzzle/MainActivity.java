@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         menubtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                soundManager.playClick();
                 popupmenu();
             }
         });
@@ -215,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         popupView.findViewById(R.id.closeButton).setOnClickListener(v -> {
+            soundManager.playClick();
             popupWindow.dismiss();
         });
 
@@ -222,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
             int id=view.getId();
 
             if (id == R.id.musiclinearlayout) {
+                soundManager.playClick();
 
                 boolean currentState = prefs.getBoolean(KEY_MUSIC_ON, true);
                 boolean newState = !currentState;
@@ -238,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Music OFF 🔇", Toast.LENGTH_SHORT).show();
                 }
             } else if (id == R.id.soundlinearlayout) {
+                soundManager.playClick();
 
                 boolean currentState = prefs.getBoolean(KEY_SOUND_ON, true);
                 boolean newState = !currentState;
@@ -297,21 +301,23 @@ public class MainActivity extends AppCompatActivity {
         CardView continueBtn = popupView.findViewById(R.id.continuebtn);
 
         popupView.findViewById(R.id.restartBtn).setOnClickListener(v -> {
+            soundManager.playClick();
             popupWindow.dismiss();
             dimBackground.setVisibility(View.GONE);
             restartGame();
         });
 
         continueBtn.setOnClickListener(v -> {
-            if (coins>=10)
+            if (coins>=200)
             {
-                coins -= 10;
+                coins -= 200;
 
                 prefs.edit().putInt(KEY_COINS, coins).apply();
 
                 animateCoins(coins);  // smooth counting
                 showCoinDeductionEffect(200); // floating -200
                 soundManager.playCoinSpend(); // coin sound
+                soundManager.playClick();
 
 
                 popupWindow.dismiss();
@@ -434,10 +440,5 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                 .show();
     }
-
-
-
-
-
 
 }
