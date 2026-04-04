@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.blockpuzzle"
-    compileSdk = 34
+    namespace = "com.abhay.blockblastify"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.blockpuzzle"
+        applicationId = "com.abhay.blockblastify"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 35
+        versionCode = 4
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
