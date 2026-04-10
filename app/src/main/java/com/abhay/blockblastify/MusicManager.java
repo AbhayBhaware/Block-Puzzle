@@ -1,4 +1,4 @@
-package com.example.blockblastify;
+package com.abhay.blockblastify;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
-
-import com.abhay.blockblastify.R;
 
 public class MusicManager implements DefaultLifecycleObserver {
 

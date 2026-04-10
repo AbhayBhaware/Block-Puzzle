@@ -1,4 +1,4 @@
-package com.example.blockblastify;
+package com.abhay.blockblastify;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -98,8 +98,8 @@ public class GameView extends View {
             Color.parseColor("#00BCD4")  // Cyan
     };
 
-    private final Block[] availableBlocks = new Block[3];
-    private Block draggingBlock = null;
+    private final com.abhay.blockblastify.Block[] availableBlocks = new com.abhay.blockblastify.Block[3];
+    private com.abhay.blockblastify.Block draggingBlock = null;
 
     private final int rows = 8, cols = 8;
     private int cellSize;
@@ -328,13 +328,13 @@ public class GameView extends View {
     }
 
     private void drawBlocks(Canvas canvas) {
-        for (Block block : availableBlocks) {
+        for (com.abhay.blockblastify.Block block : availableBlocks) {
             if (block == null || block.isUsed) continue;
             drawSingleBlock(canvas, block);
         }
     }
 
-    private void drawSingleBlock(Canvas canvas, Block block) {
+    private void drawSingleBlock(Canvas canvas, com.abhay.blockblastify.Block block) {
         float radius = blockRadius;
         canvas.save();
 
@@ -363,7 +363,7 @@ public class GameView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                for (Block block : availableBlocks) {
+                for (com.abhay.blockblastify.Block block : availableBlocks) {
                     if (block == null || block.isUsed) continue;
 
                     if (isTouchInsideBlock(event, block)) {
@@ -433,7 +433,7 @@ public class GameView extends View {
         return super.performClick();
     }
 
-    private void placeBlock(Block block) {
+    private void placeBlock(com.abhay.blockblastify.Block block) {
         int col = Math.round((block.x - gridMargin) / cellSize);
         int row = Math.round((block.y - gridMargin) / cellSize);
 
@@ -487,7 +487,7 @@ public class GameView extends View {
     }
 
     private boolean allBlocksUsed() {
-        for (Block block : availableBlocks) {
+        for (com.abhay.blockblastify.Block block : availableBlocks) {
             if (block != null && !block.isUsed) {
                 return false;
             }
@@ -495,7 +495,7 @@ public class GameView extends View {
         return true;
     }
 
-    private boolean canPlace(Block block, int row, int col) {
+    private boolean canPlace(com.abhay.blockblastify.Block block, int row, int col) {
         for (int i = 0; i < block.shape.length; i++) {
             for (int j = 0; j < block.shape[0].length; j++) {
                 if (block.shape[i][j] == 1) {
@@ -526,7 +526,7 @@ public class GameView extends View {
             }
 
             int colorIndex = (int) (Math.random() * colors.length);
-            availableBlocks[i] = new Block(
+            availableBlocks[i] = new com.abhay.blockblastify.Block(
                     selectedShape,
                     colors[colorIndex]
             );
@@ -545,7 +545,7 @@ public class GameView extends View {
         float sectionWidth = trayWidth / 3f;
 
         for (int i = 0; i < 3; i++) {
-            Block block = availableBlocks[i];
+            com.abhay.blockblastify.Block block = availableBlocks[i];
             if (block == null) continue;
 
             block.scale = 0.6f;
@@ -602,7 +602,7 @@ public class GameView extends View {
         }
     }
 
-    private boolean isTouchInsideBlock(MotionEvent e, Block block) {
+    private boolean isTouchInsideBlock(MotionEvent e, com.abhay.blockblastify.Block block) {
         float fullWidth = block.getWidth() * cellSize;
         float fullHeight = block.getHeight() * cellSize;
 
@@ -742,7 +742,7 @@ public class GameView extends View {
     }
 
     private boolean canAnyBlockFit() {
-        for (Block block : availableBlocks) {
+        for (com.abhay.blockblastify.Block block : availableBlocks) {
             if (block == null || block.isUsed) continue;
 
             int blockHeight = block.shape.length;
@@ -970,7 +970,7 @@ public class GameView extends View {
         return empty;
     }
 
-    private int countBlockCells(Block block) {
+    private int countBlockCells(com.abhay.blockblastify.Block block) {
         int count = 0;
         for (int i = 0; i < block.shape.length; i++) {
             for (int j = 0; j < block.shape[0].length; j++) {

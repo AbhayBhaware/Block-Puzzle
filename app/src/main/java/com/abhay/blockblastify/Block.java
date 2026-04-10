@@ -1,4 +1,4 @@
-package com.example.blockblastify;
+package com.abhay.blockblastify;
 
 public class Block {
 

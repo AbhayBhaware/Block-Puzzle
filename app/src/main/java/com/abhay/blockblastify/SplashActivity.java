@@ -1,4 +1,4 @@
-package com.example.blockblastify;
+package com.abhay.blockblastify;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,8 +9,6 @@ import android.os.Looper;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.abhay.blockblastify.R;
 
 public class SplashActivity extends AppCompatActivity {
 

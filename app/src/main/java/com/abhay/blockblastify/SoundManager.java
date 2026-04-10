@@ -1,10 +1,8 @@
-package com.example.blockblastify;
+package com.abhay.blockblastify;
 
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
-
-import com.abhay.blockblastify.R;
 
 public class SoundManager {
 

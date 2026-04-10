@@ -1,4 +1,4 @@
-package com.example.blockblastify;
+package com.abhay.blockblastify;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -16,8 +16,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.abhay.blockblastify.R;
-
 public class HomeActivity extends AppCompatActivity {
 
     CardView classicbtn, settingbtn, levelbtn;
@@ -28,7 +26,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final String KEY_COINS = "coins";
     private static final String KEY_MUSIC_ON = "music_on";
     private boolean doubleBackToExitPressedOnce = false;
-    SoundManager soundManager;
+    com.abhay.blockblastify.SoundManager soundManager;
     private android.os.Handler backPressHandler = new android.os.Handler();
     private final Runnable resetBackPress = () -> doubleBackToExitPressedOnce = false;
 
@@ -44,14 +42,14 @@ public class HomeActivity extends AppCompatActivity {
 
         boolean isMusicOn = prefs.getBoolean(KEY_MUSIC_ON, true);
         if (isMusicOn) {
-            MusicManager.startMusic(this);
+            com.abhay.blockblastify.MusicManager.startMusic(this);
         }
 
         classicbtn = findViewById(R.id.classicbtn);
         settingbtn = findViewById(R.id.settingbtn);
         levelbtn = findViewById(R.id.levelbtn);
         dimBackground = findViewById(R.id.dimBackground);
-        soundManager = new SoundManager(this);
+        soundManager = new com.abhay.blockblastify.SoundManager(this);
 
         boolean isSoundOn = prefs.getBoolean(KEY_SOUND_ON, true);
         soundManager.setSoundEnabled(isSoundOn);
@@ -153,11 +151,11 @@ public class HomeActivity extends AppCompatActivity {
                         prefs.edit().putBoolean(KEY_MUSIC_ON, newState).apply();
 
                         if (newState) {
-                            MusicManager.startMusic(HomeActivity.this);
+                            com.abhay.blockblastify.MusicManager.startMusic(HomeActivity.this);
                             musicIcon.setImageResource(R.drawable.musicon);
                             Toast.makeText(HomeActivity.this, "Music ON 🎵", Toast.LENGTH_SHORT).show();
                         } else {
-                            MusicManager.pauseMusic();
+                            com.abhay.blockblastify.MusicManager.pauseMusic();
                             musicIcon.setImageResource(R.drawable.musicoff);
                             Toast.makeText(HomeActivity.this, "Music OFF 🔇", Toast.LENGTH_SHORT).show();
                         }

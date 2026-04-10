@@ -13,13 +13,13 @@
         android:theme="@style/Theme.BlockPuzzle"
         tools:targetApi="31">
         <activity
-            android:name=".HomeActivity"
+            android:name="com.abhay.blockblastify.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.abhay.blockblastify.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name="com.abhay.blockblastify.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

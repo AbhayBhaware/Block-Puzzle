@@ -1,4 +1,4 @@
-package com.example.blockblastify;
+package com.abhay.blockblastify;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -15,11 +15,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.abhay.blockblastify.R;
-
 public class MainActivity extends AppCompatActivity {
 
-    GameView gameView;
+    com.abhay.blockblastify.GameView gameView;
     TextView scoreText;
 
     CardView menubtn;
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     int displayedScore = 0;
     android.animation.ValueAnimator scoreAnimator;
-    SoundManager soundManager;
+    com.abhay.blockblastify.SoundManager soundManager;
 
 
     @Override
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         scoreText = findViewById(R.id.scoreText);
         menubtn=findViewById(R.id.menuButton);
         dimBackground = findViewById(R.id.dimBackground);
-        soundManager = new SoundManager(this);
+        soundManager = new com.abhay.blockblastify.SoundManager(this);
 
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
@@ -126,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        gameView.setScoreListener(new GameView.ScoreListener() {
+        gameView.setScoreListener(new com.abhay.blockblastify.GameView.ScoreListener() {
             @Override
             public void onScoreChanged(int newScore) {
 
@@ -234,11 +232,11 @@ public class MainActivity extends AppCompatActivity {
                 prefs.edit().putBoolean(KEY_MUSIC_ON, newState).apply();
 
                 if (newState) {
-                    MusicManager.startMusic(MainActivity.this);
+                    com.abhay.blockblastify.MusicManager.startMusic(MainActivity.this);
                     musicIcon.setImageResource(R.drawable.musicon);
                     Toast.makeText(MainActivity.this, "Music ON 🎵", Toast.LENGTH_SHORT).show();
                 } else {
-                    MusicManager.pauseMusic();
+                    com.abhay.blockblastify.MusicManager.pauseMusic();
                     musicIcon.setImageResource(R.drawable.musicoff);
                     Toast.makeText(MainActivity.this, "Music OFF 🔇", Toast.LENGTH_SHORT).show();
                 }
@@ -429,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         showQuitGameDialog();
     }
 
