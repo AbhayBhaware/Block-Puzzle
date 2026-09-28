@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Block Blast Ify – Classic Block Puzzle Game</title>
+  <meta name="description" content="Block Blast Ify is a classic block puzzle game. Drag, drop and clear lines to rack up the highest score. Free on Google Play." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <span class="logo-icon">🧩</span>
+        <span class="logo-text">Block Blast Ify</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" class="nav-cta">Get the App</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="floating-block b1"></div>
+      <div class="floating-block b2"></div>
+      <div class="floating-block b3"></div>
+      <div class="floating-block b4"></div>
+      <div class="floating-block b5"></div>
+      <div class="floating-block b6"></div>
+    </div>
+    <div class="hero-content">
+      <div class="badge">🎮 Free to Play</div>
+      <h1 class="hero-title">
+        Block <span class="gradient-text">Blast</span> Ify
+      </h1>
+      <p class="hero-sub">
+        The ultimate classic block puzzle experience.<br />
+        Drag. Drop. Clear. Repeat.
+      </p>
+      <div class="hero-actions">
+        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" class="btn-primary" id="hero-download-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.21l12.2-7.05-2.71-2.71-10.48 9.55zM.54 1.06C.2 1.42 0 1.97 0 2.67v18.66c0 .7.2 1.25.54 1.61l.08.08 10.45-10.45v-.24L.62.98l-.08.08zM22.04 10.3l-2.95-1.7-3.08 3.08 3.08 3.08 2.97-1.71c.85-.49.85-1.28-.02-1.75zM4.17.24L16.37 7.3l-2.71 2.71L3.18.46A1.12 1.12 0 0 1 4.17.24z"/></svg>
+          Download on Google Play
+        </a>
+      </div>
+    </div>
+    <div class="hero-mockup">
+      <div class="phone-shell">
+        <div class="phone-screen">
+          <div class="game-preview">
+            <div class="grid-preview">
+              <div class="grid-row">
+                <div class="cell filled c1"></div><div class="cell filled c2"></div><div class="cell filled c1"></div><div class="cell empty"></div><div class="cell filled c3"></div>
+              </div>
+              <div class="grid-row">
+                <div class="cell filled c2"></div><div class="cell filled c1"></div><div class="cell filled c3"></div><div class="cell filled c2"></div><div class="cell filled c1"></div>
+              </div>
+              <div class="grid-row">
+                <div class="cell empty"></div><div class="cell filled c3"></div><div class="cell filled c2"></div><div class="cell filled c1"></div><div class="cell empty"></div>
+              </div>
+              <div class="grid-row">
+                <div class="cell filled c1"></div><div class="cell empty"></div><div class="cell filled c1"></div><div class="cell filled c3"></div><div class="cell filled c2"></div>
+              </div>
+              <div class="grid-row">
+                <div class="cell filled c3"></div><div class="cell filled c2"></div><div class="cell filled c1"></div><div class="cell filled c2"></div><div class="cell filled c3"></div>
+              </div>
+            </div>
+            <div class="score-preview">
+              <div class="score-item">
+                <span class="score-label">Score</span>
+                <span class="score-val">12,480</span>
+              </div>
+              <div class="score-item">
+                <span class="score-label">Best</span>
+                <span class="score-val">24,390</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-label">Why you'll love it</div>
+      <h2 class="section-title">Simple to learn.<br />Hard to put down.</h2>
+      <div class="features-grid">
+        <div class="feature-card" data-index="0">
+          <div class="feature-icon">🎯</div>
+          <h3>Classic Gameplay</h3>
+          <p>Place blocks on the board, clear full lines and columns. A timeless puzzle mechanic you never get tired of.</p>
+        </div>
+        <div class="feature-card" data-index="1">
+          <div class="feature-icon">🏆</div>
+          <h3>High Score Chase</h3>
+          <p>Beat your personal best. Earn coins on every run and bonus coins for breaking records.</p>
+        </div>
+        <div class="feature-card" data-index="2">
+          <div class="feature-icon">🪙</div>
+          <h3>Coin Revive System</h3>
+          <p>Stuck? Spend 200 coins to revive your game and keep the combo going.</p>
+        </div>
+        <div class="feature-card" data-index="3">
+          <div class="feature-icon">🎵</div>
+          <h3>Music &amp; Sound FX</h3>
+          <p>Toggle background music and sound effects independently for the perfect vibe.</p>
+        </div>
+        <div class="feature-card" data-index="4">
+          <div class="feature-icon">📱</div>
+          <h3>Smooth &amp; Fluid</h3>
+          <p>Buttery smooth animations and a polished UI that feels great on any Android device.</p>
+        </div>
+        <div class="feature-card" data-index="5">
+          <div class="feature-icon">🆓</div>
+          <h3>Completely Free</h3>
+          <p>No paywalls. No forced ads. Just pure puzzle fun, available to everyone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-glow"></div>
+    <div class="container cta-inner">
+      <h2>Ready to play?</h2>
+      <p>Join players who can't put it down. Available free on Android.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" class="btn-primary" id="cta-download-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.21l12.2-7.05-2.71-2.71-10.48 9.55zM.54 1.06C.2 1.42 0 1.97 0 2.67v18.66c0 .7.2 1.25.54 1.61l.08.08 10.45-10.45v-.24L.62.98l-.08.08zM22.04 10.3l-2.95-1.7-3.08 3.08 3.08 3.08 2.97-1.71c.85-.49.85-1.28-.02-1.75zM4.17.24L16.37 7.3l-2.71 2.71L3.18.46A1.12 1.12 0 0 1 4.17.24z"/></svg>
+        Download Free on Google Play
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-icon">🧩</span>
+        <span>Block Blast Ify</span>
+      </div>
+      <div class="footer-links">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="app-ads.txt">app-ads.txt</a>
+      </div>
+      <div class="footer-copy">
+        &copy; 2024 11:11 Studio. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
