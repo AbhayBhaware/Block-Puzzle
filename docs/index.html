@@ -4,117 +4,254 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Block Blastify – Classic Block Puzzle Game</title>
-  <meta name="description" content="Block Blastify is a classic block puzzle game. Drag, drop and clear lines to rack up the highest score. Free on Google Play." />
+  <meta name="description" content="Block Blastify is a free classic block puzzle game for Android. Drop pieces, clear lines and beat your high score. Download now on Google Play." />
+  <meta property="og:title" content="Block Blastify – Classic Block Puzzle" />
+  <meta property="og:description" content="Drop pieces, clear lines and beat your high score. Free on Google Play." />
+  <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <nav class="navbar">
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar" id="navbar">
     <div class="nav-inner">
-      <span class="nav-brand">Block Blastify</span>
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">🧩</div>
+        <span>Block Blastify</span>
+      </a>
       <div class="nav-links">
-        <a href="privacy-policy.html">Privacy Policy</a>
-        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" class="nav-cta" id="nav-play-btn">Get App</a>
+        <a href="#features">Features</a>
+        <a href="privacy-policy.html">Privacy</a>
+        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify"
+           target="_blank" rel="noopener" class="btn-nav" id="nav-cta-btn">
+          Get the App
+        </a>
       </div>
     </div>
   </nav>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-text">
-        <p class="eyebrow">Puzzle · Android</p>
-        <h1>Block<br><span class="accent">Blastify</span></h1>
-        <p class="hero-desc">A clean, satisfying block puzzle. Drop pieces, clear lines, beat your score.</p>
-        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" class="btn-play" id="hero-play-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.21l12.2-7.05-2.71-2.71-10.48 9.55zM.54 1.06C.2 1.42 0 1.97 0 2.67v18.66c0 .7.2 1.25.54 1.61l.08.08 10.45-10.45v-.24L.62.98l-.08.08zM22.04 10.3l-2.95-1.7-3.08 3.08 3.08 3.08 2.97-1.71c.85-.49.85-1.28-.02-1.75zM4.17.24L16.37 7.3l-2.71 2.71L3.18.46A1.12 1.12 0 0 1 4.17.24z"/></svg>
-          Google Play
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="app-badge-row">
+          <div class="app-icon-lg">🧩</div>
+          <div class="app-meta">
+            <span class="app-meta-name">Block Blastify</span>
+            <span class="app-meta-dev">by 11:11 Studio</span>
+          </div>
+        </div>
+        <h1>The block puzzle<br /><em>you'll keep coming back to.</em></h1>
+        <p class="hero-desc">
+          A clean, satisfying puzzle game. Drop pieces on the board,
+          clear lines and columns, and push your high score further every run.
+          Completely free, no paywalls.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-val">Free</span>
+            <span class="stat-lbl">to play</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-val">Android</span>
+            <span class="stat-lbl">5.0 &amp; up</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-val">No</span>
+            <span class="stat-lbl">paywalls</span>
+          </div>
+        </div>
+        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify"
+           target="_blank" rel="noopener" class="btn-gplay" id="hero-play-btn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+               alt="Get it on Google Play" width="200" height="60" />
         </a>
       </div>
 
-      <div class="phone-wrap">
-        <div class="phone">
-          <div class="phone-notch"></div>
-          <div class="phone-screen">
-            <div class="game-ui">
-              <div class="ui-scores">
-                <div class="ui-score-item">
-                  <span class="ui-label">Score</span>
-                  <span class="ui-val">12,480</span>
+      <div class="hero-right">
+        <div class="phone-outer">
+          <div class="phone-device">
+            <div class="phone-bar"></div>
+            <div class="phone-screen">
+              <!-- Status bar -->
+              <div class="status-bar">
+                <span>9:41</span>
+                <span>▐▐▐ ◼</span>
+              </div>
+              <!-- Game header -->
+              <div class="game-header">
+                <div class="gh-item">
+                  <span class="gh-label">Score</span>
+                  <span class="gh-val">12,480</span>
                 </div>
-                <div class="ui-score-item">
-                  <span class="ui-label">Best</span>
-                  <span class="ui-val">24,390</span>
+                <div class="gh-title">🧩</div>
+                <div class="gh-item">
+                  <span class="gh-label">Best</span>
+                  <span class="gh-val">24,390</span>
                 </div>
               </div>
-              <div class="board">
-                <div class="board-row"><div class="bl p"></div><div class="bl c"></div><div class="bl p"></div><div class="bl"></div><div class="bl y"></div><div class="bl p"></div><div class="bl"></div></div>
-                <div class="board-row"><div class="bl c"></div><div class="bl p"></div><div class="bl y"></div><div class="bl c"></div><div class="bl p"></div><div class="bl y"></div><div class="bl c"></div></div>
-                <div class="board-row"><div class="bl"></div><div class="bl y"></div><div class="bl c"></div><div class="bl p"></div><div class="bl"></div><div class="bl c"></div><div class="bl p"></div></div>
-                <div class="board-row"><div class="bl p"></div><div class="bl"></div><div class="bl p"></div><div class="bl y"></div><div class="bl c"></div><div class="bl"></div><div class="bl y"></div></div>
-                <div class="board-row"><div class="bl y"></div><div class="bl c"></div><div class="bl"></div><div class="bl p"></div><div class="bl y"></div><div class="bl p"></div><div class="bl c"></div></div>
-                <div class="board-row"><div class="bl c"></div><div class="bl p"></div><div class="bl y"></div><div class="bl"></div><div class="bl c"></div><div class="bl y"></div><div class="bl p"></div></div>
-                <div class="board-row"><div class="bl"></div><div class="bl y"></div><div class="bl p"></div><div class="bl c"></div><div class="bl p"></div><div class="bl"></div><div class="bl c"></div></div>
+              <!-- Grid -->
+              <div class="grid-wrap">
+                <div class="grid-board">
+                  <div class="gr"><div class="gc p"></div><div class="gc c"></div><div class="gc p"></div><div class="gc e"></div><div class="gc y"></div><div class="gc p"></div><div class="gc e"></div><div class="gc c"></div></div>
+                  <div class="gr"><div class="gc c"></div><div class="gc p"></div><div class="gc y"></div><div class="gc c"></div><div class="gc p"></div><div class="gc e"></div><div class="gc c"></div><div class="gc p"></div></div>
+                  <div class="gr"><div class="gc e"></div><div class="gc y"></div><div class="gc c"></div><div class="gc p"></div><div class="gc e"></div><div class="gc c"></div><div class="gc p"></div><div class="gc y"></div></div>
+                  <div class="gr"><div class="gc p"></div><div class="gc e"></div><div class="gc p"></div><div class="gc y"></div><div class="gc c"></div><div class="gc p"></div><div class="gc y"></div><div class="gc e"></div></div>
+                  <div class="gr"><div class="gc y"></div><div class="gc c"></div><div class="gc e"></div><div class="gc p"></div><div class="gc y"></div><div class="gc e"></div><div class="gc c"></div><div class="gc p"></div></div>
+                  <div class="gr"><div class="gc c"></div><div class="gc p"></div><div class="gc y"></div><div class="gc e"></div><div class="gc c"></div><div class="gc y"></div><div class="gc p"></div><div class="gc c"></div></div>
+                  <div class="gr"><div class="gc e"></div><div class="gc y"></div><div class="gc p"></div><div class="gc c"></div><div class="gc p"></div><div class="gc e"></div><div class="gc y"></div><div class="gc p"></div></div>
+                  <div class="gr"><div class="gc p"></div><div class="gc c"></div><div class="gc e"></div><div class="gc p"></div><div class="gc y"></div><div class="gc c"></div><div class="gc e"></div><div class="gc c"></div></div>
+                </div>
+              </div>
+              <!-- Coin bar -->
+              <div class="coin-bar">
+                <span class="coin-icon">🪙</span>
+                <span class="coin-val">1,240</span>
               </div>
             </div>
           </div>
+          <div class="phone-glow"></div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- FEATURES -->
-    <section class="features">
-      <div class="container">
-        <div class="feat-grid">
-          <div class="feat">
-            <span class="feat-num">01</span>
-            <h3>Classic Mode</h3>
-            <p>Place blocks, fill lines, score big. The timeless formula — perfected.</p>
-          </div>
-          <div class="feat">
-            <span class="feat-num">02</span>
-            <h3>Coin System</h3>
-            <p>Earn coins every game. Spend 200 to revive when you're on a hot streak.</p>
-          </div>
-          <div class="feat">
-            <span class="feat-num">03</span>
-            <h3>High Scores</h3>
-            <p>Track your personal best. Beat it. Repeat it.</p>
-          </div>
-          <div class="feat">
-            <span class="feat-num">04</span>
-            <h3>No Paywalls</h3>
-            <p>Completely free. No purchases, no subscriptions, no nonsense.</p>
-          </div>
+  <!-- ── FEATURES ── -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <div class="section-tag">Features</div>
+      <h2 class="section-h">Everything you need.<br />Nothing you don't.</h2>
+
+      <div class="feats">
+        <div class="feat-card">
+          <div class="feat-ico">🎯</div>
+          <h3>Classic Block Puzzle</h3>
+          <p>Drag and drop pieces onto the 8×8 board. Fill complete lines or columns to clear them and score points.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ico">🏆</div>
+          <h3>Personal High Score</h3>
+          <p>Your best score is saved locally. Break it and earn a 20-coin bonus. Chase it every single run.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ico">🪙</div>
+          <h3>Coin Revive</h3>
+          <p>Earn 5 coins every game. Spend 200 to revive once and extend your best run when the board is full.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ico">🎵</div>
+          <h3>Music &amp; Sound</h3>
+          <p>Toggle background music and sound effects independently. Play in silence or with the full experience.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ico">⚡</div>
+          <h3>Smooth &amp; Fast</h3>
+          <p>Fluid animations and snappy controls. Optimized for Android 5.0 and above with no lag.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ico">🆓</div>
+          <h3>100% Free</h3>
+          <p>No in-app purchases, no subscription, no locked content. Download and play immediately.</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- CTA -->
-    <section class="cta">
-      <div class="container cta-inner">
-        <p class="cta-label">Available on Android</p>
-        <h2>Start playing today.</h2>
-        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" class="btn-play" id="cta-play-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.21l12.2-7.05-2.71-2.71-10.48 9.55zM.54 1.06C.2 1.42 0 1.97 0 2.67v18.66c0 .7.2 1.25.54 1.61l.08.08 10.45-10.45v-.24L.62.98l-.08.08zM22.04 10.3l-2.95-1.7-3.08 3.08 3.08 3.08 2.97-1.71c.85-.49.85-1.28-.02-1.75zM4.17.24L16.37 7.3l-2.71 2.71L3.18.46A1.12 1.12 0 0 1 4.17.24z"/></svg>
-          Download Free
-        </a>
+  <!-- ── HOW TO PLAY ── -->
+  <section class="howto">
+    <div class="section-inner howto-inner">
+      <div class="howto-text">
+        <div class="section-tag">How it works</div>
+        <h2 class="section-h">Simple rules.<br />Endless depth.</h2>
+        <ol class="steps">
+          <li>
+            <span class="step-n">1</span>
+            <div>
+              <strong>Pick a piece</strong>
+              <p>Three block pieces are shown at the bottom. Choose which to place next.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">2</span>
+            <div>
+              <strong>Drop it on the board</strong>
+              <p>Drag the piece to any valid position on the 8×8 grid.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">3</span>
+            <div>
+              <strong>Clear lines &amp; score</strong>
+              <p>Complete full rows or columns — they vanish and you score points.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">4</span>
+            <div>
+              <strong>Survive as long as possible</strong>
+              <p>The game ends when no more pieces can be placed. Beat your best.</p>
+            </div>
+          </li>
+        </ol>
       </div>
-    </section>
-  </main>
+      <div class="howto-visual">
+        <div class="tip-card">
+          <span class="tip-ico">💡</span>
+          <strong>Pro Tip</strong>
+          <p>Clear multiple lines at once for a combo bonus. Plan your placements two or three moves ahead.</p>
+        </div>
+        <div class="tip-card">
+          <span class="tip-ico">🪙</span>
+          <strong>Use your coins wisely</strong>
+          <p>Revives cost 200 coins. Save them for when you're having your best-ever run.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- ── DOWNLOAD CTA ── -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Ready to play?</h2>
+      <p>Free on Android. No sign-up required. Just download and play.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify"
+         target="_blank" rel="noopener" class="btn-gplay" id="cta-play-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+             alt="Get it on Google Play" width="200" height="60" />
+      </a>
+      <p class="cta-note">com.abhay.blockblastify</p>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
   <footer class="footer">
-    <div class="container footer-inner">
-      <span>© 2024 11:11 Studio</span>
-      <div class="footer-links">
+    <div class="foot-inner">
+      <div class="foot-left">
+        <div class="foot-brand">🧩 Block Blastify</div>
+        <p class="foot-byline">A casual puzzle game by 11:11 Studio.</p>
+      </div>
+      <div class="foot-right">
         <a href="privacy-policy.html">Privacy Policy</a>
         <a href="app-ads.txt">app-ads.txt</a>
+        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" rel="noopener">Google Play</a>
       </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2024 11:11 Studio · All rights reserved</span>
     </div>
   </footer>
 
+  <script>
+    // Navbar shadow on scroll
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
 </body>
 </html>

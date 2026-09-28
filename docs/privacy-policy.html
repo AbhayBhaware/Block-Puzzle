@@ -3,136 +3,290 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy – Block Blastify</title>
-  <meta name="description" content="Privacy Policy for Block Blastify, a block puzzle game by 11:11 Studio." />
+  <title>Privacy Policy – Block Blastify by 11:11 Studio</title>
+  <meta name="description" content="Privacy Policy for Block Blastify, a free Android block puzzle game by 11:11 Studio." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <nav class="navbar">
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar" id="navbar">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Block Blastify</a>
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">🧩</div>
+        <span>Block Blastify</span>
+      </a>
       <div class="nav-links">
-        <a href="privacy-policy.html">Privacy Policy</a>
-        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" class="nav-cta" id="nav-play-btn">Get App</a>
+        <a href="index.html">Home</a>
+        <a href="privacy-policy.html">Privacy</a>
+        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify"
+           target="_blank" rel="noopener" class="btn-nav" id="nav-cta-btn">
+          Get the App
+        </a>
       </div>
     </div>
   </nav>
 
-  <main class="pp-main">
-    <div class="pp-header">
-      <p class="eyebrow">Legal</p>
+  <!-- ── PP HERO ── -->
+  <div class="pp-top">
+    <div class="pp-top-inner">
+      <div class="section-tag">Legal</div>
       <h1>Privacy Policy</h1>
-      <p class="pp-date">Last updated: September 28, 2024</p>
+      <p class="pp-meta">
+        App: <strong>Block Blastify</strong> &nbsp;·&nbsp;
+        Developer: <strong>11:11 Studio</strong> &nbsp;·&nbsp;
+        Last updated: <strong>September 28, 2024</strong>
+      </p>
+      <p class="pp-intro">
+        We built Block Blastify as a free, simple puzzle game. This policy explains clearly
+        what data is involved when you play, and what happens with it. We believe in full transparency.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── PP CONTENT ── -->
+  <div class="pp-layout">
+
+    <!-- Quick Summary Card -->
+    <div class="pp-summary">
+      <h2 class="pp-summary-title">At a glance</h2>
+      <div class="pp-pills">
+        <div class="pp-pill green">
+          <span class="pill-ico">✅</span>
+          <span>No personal data collected</span>
+        </div>
+        <div class="pp-pill green">
+          <span class="pill-ico">✅</span>
+          <span>Game data stays on your device</span>
+        </div>
+        <div class="pp-pill green">
+          <span class="pill-ico">✅</span>
+          <span>No accounts or sign-up</span>
+        </div>
+        <div class="pp-pill yellow">
+          <span class="pill-ico">⚠️</span>
+          <span>Ads shown via Google AdMob</span>
+        </div>
+        <div class="pp-pill green">
+          <span class="pill-ico">✅</span>
+          <span>No data sold to third parties</span>
+        </div>
+        <div class="pp-pill green">
+          <span class="pill-ico">✅</span>
+          <span>Safe for all ages</span>
+        </div>
+      </div>
     </div>
 
-    <div class="pp-body">
+    <!-- Sections -->
+    <div class="pp-sections">
 
-      <div class="pp-block">
-        <h2>Introduction</h2>
-        <p>
-          <strong>Block Blastify</strong> is developed by <strong>11:11 Studio</strong> ("we", "our", "us").
-          This Privacy Policy describes how we handle information when you use our Android app available on Google Play.
-          By using the app, you agree to the practices described here.
-        </p>
+      <div class="pp-sec">
+        <div class="pp-sec-num">01</div>
+        <div class="pp-sec-body">
+          <h2>Introduction</h2>
+          <p>
+            Welcome to <strong>Block Blastify</strong>, a free Android block puzzle game developed by
+            <strong>11:11 Studio</strong> ("we", "us", "our"). This Privacy Policy explains what
+            information is involved when you use our app and how it is handled.
+          </p>
+          <p>
+            By downloading and playing Block Blastify, you agree to the practices described here.
+            If you disagree with any part, please uninstall the app.
+          </p>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>What We Collect</h2>
-        <p>We collect very little. Here is the full picture:</p>
-        <ul>
-          <li><strong>No personal data directly:</strong> We do not collect your name, email, phone number, or any personally identifiable information.</li>
-          <li><strong>Local game data:</strong> Your high score, coin balance, and settings (music/sound) are stored locally on your device using Android SharedPreferences. This data never leaves your device.</li>
-          <li><strong>Advertising data via AdMob:</strong> The app uses Google AdMob to show ads. AdMob may collect device identifiers and usage data to serve relevant ads. See the Advertising section below.</li>
-        </ul>
+      <div class="pp-sec">
+        <div class="pp-sec-num">02</div>
+        <div class="pp-sec-body">
+          <h2>Information We Collect</h2>
+          <p><strong>Directly collected by us — none.</strong> We do not ask for or store your name,
+          email, phone number, or any personally identifiable information.</p>
+          <div class="pp-table">
+            <div class="pp-row">
+              <div class="pp-col-label">High Score</div>
+              <div class="pp-col-val">Stored locally on your device only. Never transmitted.</div>
+            </div>
+            <div class="pp-row">
+              <div class="pp-col-label">Coin Balance</div>
+              <div class="pp-col-val">Stored locally on your device only. Never transmitted.</div>
+            </div>
+            <div class="pp-row">
+              <div class="pp-col-label">Settings (music/sound)</div>
+              <div class="pp-col-val">Stored locally on your device only. Never transmitted.</div>
+            </div>
+            <div class="pp-row pp-row-warn">
+              <div class="pp-col-label">Ad-related data</div>
+              <div class="pp-col-val">Collected by Google AdMob to serve ads. See Section 04.</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>How We Use Data</h2>
-        <ul>
-          <li>To save your game progress locally on your device.</li>
-          <li>To display advertisements through Google AdMob, keeping the app free.</li>
-          <li>To improve gameplay in future updates.</li>
-        </ul>
+      <div class="pp-sec">
+        <div class="pp-sec-num">03</div>
+        <div class="pp-sec-body">
+          <h2>How We Use Information</h2>
+          <ul>
+            <li>To save your game progress (score, coins, preferences) on your local device.</li>
+            <li>To display advertisements via Google AdMob, which keeps the game free for everyone.</li>
+            <li>To analyse crash reports (if any) to improve app stability in future updates.</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>Google AdMob</h2>
-        <p>
-          We use <strong>Google AdMob</strong> (Publisher ID: <code>pub-9423620095795922</code>) to serve ads.
-          AdMob may collect:
-        </p>
-        <ul>
-          <li>Device identifiers (Android Advertising ID)</li>
-          <li>IP address and approximate location</li>
-          <li>App usage and interaction data</li>
-          <li>Diagnostic information</li>
-        </ul>
-        <p>
-          This is governed by Google's Privacy Policy:
-          <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a>
-        </p>
+      <div class="pp-sec">
+        <div class="pp-sec-num">04</div>
+        <div class="pp-sec-body">
+          <h2>Advertising — Google AdMob</h2>
+          <p>
+            Block Blastify uses <strong>Google AdMob</strong> to show advertisements.
+            AdMob is operated by Google LLC and may collect the following to serve ads:
+          </p>
+          <ul>
+            <li>Android Advertising ID (GAID)</li>
+            <li>IP address and coarse location</li>
+            <li>Device model and operating system version</li>
+            <li>App usage and interaction events</li>
+          </ul>
+          <div class="pp-info-box">
+            <strong>Our AdMob Publisher ID:</strong> <code>pub-9423620095795922</code><br /><br />
+            This data collection is governed entirely by Google's Privacy Policy:
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">
+              policies.google.com/privacy
+            </a>
+          </div>
+          <p>
+            You can opt out of personalised ads at any time by resetting your Advertising ID:
+            <strong>Settings → Google → Ads → Reset Advertising ID</strong>.
+          </p>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>Data Sharing</h2>
-        <p>
-          We do not sell or share your personal information with third parties, except through
-          AdMob as described above. We have no access to data AdMob collects.
-        </p>
+      <div class="pp-sec">
+        <div class="pp-sec-num">05</div>
+        <div class="pp-sec-body">
+          <h2>Data Sharing &amp; Selling</h2>
+          <p>
+            We <strong>do not sell, rent, or trade</strong> your personal information to any third party.
+            The only data sharing that occurs is through Google AdMob (described in Section 04),
+            which we do not control directly.
+          </p>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>Children's Privacy</h2>
-        <p>
-          Block Blastify is a casual game suitable for all ages. We do not knowingly collect
-          personal information from children under 13. If you believe a child under 13 has provided
-          us personal data, contact us and we will remove it.
-        </p>
+      <div class="pp-sec">
+        <div class="pp-sec-num">06</div>
+        <div class="pp-sec-body">
+          <h2>Children's Privacy</h2>
+          <p>
+            Block Blastify is a casual puzzle game suitable for all ages, including children.
+            We do not knowingly collect personal information from children under the age of 13.
+          </p>
+          <p>
+            If you believe a child under 13 has somehow provided personal data through our app,
+            please contact us via the Google Play listing and we will take immediate steps to remove it.
+          </p>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>Your Rights</h2>
-        <ul>
-          <li>Reset or limit your Android Advertising ID via <strong>Settings → Google → Ads</strong> to opt out of personalized ads.</li>
-          <li>Uninstall the app at any time — all local data is removed automatically.</li>
-          <li>Contact us to request deletion of any data associated with you.</li>
-        </ul>
+      <div class="pp-sec">
+        <div class="pp-sec-num">07</div>
+        <div class="pp-sec-body">
+          <h2>Data Security</h2>
+          <p>
+            All game data (score, coins, settings) is stored exclusively on your device using
+            Android SharedPreferences. This data is never uploaded to any server.
+          </p>
+          <p>
+            No method of storage is 100% secure, but since your data never leaves your device,
+            the risk surface is minimal.
+          </p>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>Changes to This Policy</h2>
-        <p>
-          We may update this policy from time to time. Changes will be reflected here with an updated date.
-          Continued use of the app constitutes acceptance of the revised policy.
-        </p>
+      <div class="pp-sec">
+        <div class="pp-sec-num">08</div>
+        <div class="pp-sec-body">
+          <h2>Your Rights &amp; Choices</h2>
+          <ul>
+            <li><strong>Opt out of personalised ads:</strong> Settings → Google → Ads → Reset or limit Ad ID.</li>
+            <li><strong>Delete your game data:</strong> Settings → Apps → Block Blastify → Clear Data.</li>
+            <li><strong>Uninstall at any time:</strong> All local data is deleted automatically.</li>
+            <li><strong>Data deletion request:</strong> Contact us via the Play Store listing page.</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="pp-block">
-        <h2>Contact</h2>
-        <p>Questions? Reach us through Google Play or via the app's store listing.</p>
-        <p style="margin-top:10px;">
-          <strong>11:11 Studio</strong><br />
-          App: Block Blastify<br />
-          Package: <code>com.abhay.blockblastify</code>
-        </p>
+      <div class="pp-sec">
+        <div class="pp-sec-num">09</div>
+        <div class="pp-sec-body">
+          <h2>Changes to This Policy</h2>
+          <p>
+            We may update this Privacy Policy from time to time. Updates will be posted on this page
+            with a revised "Last updated" date. We encourage you to review this page periodically.
+            Continued use of the app after changes constitutes acceptance of the updated policy.
+          </p>
+        </div>
+      </div>
+
+      <div class="pp-sec">
+        <div class="pp-sec-num">10</div>
+        <div class="pp-sec-body">
+          <h2>Contact Us</h2>
+          <p>If you have any questions about this Privacy Policy, reach us through:</p>
+          <div class="pp-contact-card">
+            <div class="contact-row">
+              <span class="contact-label">App</span>
+              <span>Block Blastify</span>
+            </div>
+            <div class="contact-row">
+              <span class="contact-label">Developer</span>
+              <span>11:11 Studio</span>
+            </div>
+            <div class="contact-row">
+              <span class="contact-label">Package ID</span>
+              <code>com.abhay.blockblastify</code>
+            </div>
+            <div class="contact-row">
+              <span class="contact-label">Play Store</span>
+              <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify"
+                 target="_blank" rel="noopener">View on Google Play</a>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
-  </main>
+  </div>
 
+  <!-- ── FOOTER ── -->
   <footer class="footer">
-    <div class="container footer-inner">
-      <span>© 2024 11:11 Studio</span>
-      <div class="footer-links">
+    <div class="foot-inner">
+      <div class="foot-left">
+        <div class="foot-brand">🧩 Block Blastify</div>
+        <p class="foot-byline">A casual puzzle game by 11:11 Studio.</p>
+      </div>
+      <div class="foot-right">
         <a href="index.html">Home</a>
         <a href="app-ads.txt">app-ads.txt</a>
+        <a href="https://play.google.com/store/apps/details?id=com.abhay.blockblastify" target="_blank" rel="noopener">Google Play</a>
       </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2024 11:11 Studio · All rights reserved</span>
     </div>
   </footer>
 
+  <script>
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
 </body>
 </html>
