@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace = "com.abhay.blockblastify"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.abhay.blockblastify"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 6
-        versionName = "1.2.2"
+        targetSdk = 36
+        versionCode = 8
+        versionName = "2.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,7 +38,7 @@ java {
 }
 
 dependencies {
-
+    implementation("androidx.activity:activity:1.9.3")
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.13.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
