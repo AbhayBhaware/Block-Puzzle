@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,6 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BlockPuzzle"
         tools:targetApi="31">
+
+        <!-- Replace with your actual AdMob App ID (ca-app-pub-...~...) -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-9423620095795922~7679712216"/>
+
         <activity
             android:name="com.abhay.blockblastify.HomeActivity"
             android:exported="false" />

@@ -1,6 +1,7 @@
 package com.abhay.blockblastify;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
@@ -18,6 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     android.animation.ValueAnimator scoreAnimator;
     com.abhay.blockblastify.SoundManager soundManager;
 
+    private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Initialize Banner Ad
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        // Load Interstitial Ad
+        loadInterstitialAd();
+
         gameView = findViewById(R.id.gameView);
         scoreText = findViewById(R.id.scoreText);
         menubtn=findViewById(R.id.menuButton);
@@ -70,11 +87,6 @@ public class MainActivity extends AppCompatActivity {
         soundManager.setSoundEnabled(isSoundOn);
 
         gameView.setSoundEnabled(isSoundOn);
-
-
-
-
-
 
         coinText = findViewById(R.id.coinText);
         coins = prefs.getInt(KEY_COINS, 0);
@@ -96,9 +108,6 @@ public class MainActivity extends AppCompatActivity {
             showCoinEarnEffect(earnedCoins);  // ADD THIS LINE
         });
 
-
-
-
         menubtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         gameView.setGameOverListener(score -> {
+
+            // Show Interstitial Ad on Game Over
+            if (mInterstitialAd != null) {
+                mInterstitialAd.show(MainActivity.this);
+            }
 
             // Participation reward
             coins += 5; // participation
@@ -124,11 +138,7 @@ public class MainActivity extends AppCompatActivity {
             coinText.setText(String.valueOf(coins));
             highScoreText.setText(String.valueOf(highScore));
 
-
-
             showGameOverPopup();
-
-
         });
 
 
@@ -152,8 +162,23 @@ public class MainActivity extends AppCompatActivity {
                 scoreAnimator.start();
             }
         });
+    }
 
+    private void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
 
+        InterstitialAd.load(this,"ca-app-pub-9423620095795922/7175160232", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        mInterstitialAd = interstitialAd;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        mInterstitialAd = null;
+                    }
+                });
     }
 
     private void restartGame() {
@@ -200,8 +225,6 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setElevation(10);
         popupWindow.setOutsideTouchable(true);
-
-
 
         dimBackground.setAlpha(0f);
         dimBackground.setVisibility(View.VISIBLE);
@@ -405,7 +428,6 @@ public class MainActivity extends AppCompatActivity {
                 .start();
     }
 
-
     private void animateCoins(int newCoins) {
 
         int startValue = Integer.parseInt(coinText.getText().toString());
@@ -423,15 +445,16 @@ public class MainActivity extends AppCompatActivity {
         animator.start();
     }
 
-
     @Override
     protected void onDestroy() {
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
         super.onDestroy();
         if (soundManager != null) {
             soundManager.release();
         }
     }
-
 
     @Override
     public void onBackPressed() {
@@ -448,5 +471,4 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                 .show();
     }
-
 }
