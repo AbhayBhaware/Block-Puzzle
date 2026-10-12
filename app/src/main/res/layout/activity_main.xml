@@ -13,18 +13,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:layout_marginTop="24dp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="6dp"
         android:gravity="center_vertical">
 
+        <!-- Mode Badge or Back/Home -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnBackMain"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="@color/card_bg"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/home"
+                android:layout_gravity="center"
+                app:tint="@color/white"
+                android:contentDescription="Home" />
+        </androidx.cardview.widget.CardView>
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="0dp"/>
+
+        <!-- High Score or Level Target Pill -->
         <androidx.cardview.widget.CardView
             android:id="@+id/highScoreTextCard"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="44dp"
             android:layout_weight="1"
             app:cardBackgroundColor="@color/card_bg"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp">
 
             <TextView
                 android:id="@+id/highScoreText"
@@ -32,26 +59,28 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 app:drawableStartCompat="@drawable/baseline_military_tech_24"
-                android:drawablePadding="8dp"
-                android:textSize="18sp"
+                android:drawablePadding="6dp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:layout_gravity="center"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:fontFamily="sans-serif-medium"/>
         </androidx.cardview.widget.CardView>
 
         <View
-            android:layout_width="12dp"
+            android:layout_width="8dp"
             android:layout_height="0dp"/>
 
+        <!-- Coins Pill -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cointextCard"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="44dp"
             android:layout_weight="1"
             app:cardBackgroundColor="@color/card_bg"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp">
 
             <TextView
                 android:id="@+id/coinText"
@@ -59,32 +88,34 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 app:drawableStartCompat="@drawable/coinlogoo"
-                android:drawablePadding="8dp"
-                android:textSize="18sp"
+                android:drawablePadding="6dp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
+                android:textColor="@color/accent_gold"
                 android:layout_gravity="center"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:fontFamily="sans-serif-medium"/>
         </androidx.cardview.widget.CardView>
 
         <View
-            android:layout_width="12dp"
+            android:layout_width="8dp"
             android:layout_height="0dp"/>
 
+        <!-- Menu Button -->
         <androidx.cardview.widget.CardView
             android:id="@+id/menuButton"
-            android:layout_width="50dp"
-            android:layout_height="48dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="3dp"
             app:cardBackgroundColor="@color/card_bg"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/menubtn"
                 android:layout_gravity="center"
                 app:tint="@color/white"
@@ -92,24 +123,94 @@
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 
-    <com.abhay.blockblastify.StrokeTextView
-        android:id="@+id/scoreText"
-        android:layout_width="wrap_content"
+    <!-- Score & Level Target Area -->
+    <LinearLayout
+        android:id="@+id/scoreContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SCORE 0"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:textColor="@color/accent_neon"
-        android:fontFamily="sans-serif-black"
-        android:background="@drawable/score_bg"
         android:layout_below="@id/topBar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:letterSpacing="0.05"
-        android:elevation="8dp"/>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="8dp">
 
+        <!-- Mode pill (e.g. CLASSIC or LEVEL 1) -->
+        <TextView
+            android:id="@+id/modeBadgeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CLASSIC"
+            android:textColor="@color/accent_neon"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.1"
+            android:background="@drawable/card_surface_bg"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="4dp"
+            android:layout_marginBottom="6dp"/>
+
+        <!-- Main Score -->
+        <com.abhay.blockblastify.StrokeTextView
+            android:id="@+id/scoreText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SCORE 0"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent_neon"
+            android:fontFamily="sans-serif-black"
+            android:background="@drawable/score_bg"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:letterSpacing="0.05"
+            android:elevation="6dp"/>
+
+        <!-- Level Target Progress (Visible in Level Mode) -->
+        <LinearLayout
+            android:id="@+id/levelProgressLayout"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/levelTargetText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Target: 500"
+                    android:textColor="@color/accent_gold"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-bold"/>
+
+                <TextView
+                    android:id="@+id/levelPercentText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium"/>
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/levelProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="4dp"
+                android:progressDrawable="@drawable/progress_bar_level"
+                android:max="100"
+                android:progress="0"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Banner Ad -->
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
@@ -119,21 +220,22 @@
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-9423620095795922/9798202577" />
 
+    <!-- Game View -->
     <com.abhay.blockblastify.GameView
         android:id="@+id/gameView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/scoreText"
+        android:layout_below="@id/scoreContainer"
         android:layout_above="@id/adView"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
 
     <!-- Dim Background Overlay -->
     <View
         android:id="@+id/dimBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#AA000000"
+        android:background="#BB000000"
         android:visibility="gone"
         android:clickable="true"
         android:focusable="true"

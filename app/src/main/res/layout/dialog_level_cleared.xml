@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="26dp"
+    app:cardElevation="24dp"
+    app:cardBackgroundColor="@color/card_bg"
+    android:layout_margin="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
+
+        <!-- Trophy / Celebration Icon -->
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_trophy"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LEVEL CLEARED!"
+            android:textColor="@color/accent_gold"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.08"/>
+
+        <!-- Stars -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_star"
+                android:layout_marginHorizontal="4dp"/>
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_star"
+                android:layout_marginHorizontal="4dp"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_star"
+                android:layout_marginHorizontal="4dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/levelClearedSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Level 1 Complete"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-bold"/>
+
+        <!-- Reward card -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/card_surface_bg"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/coinlogoo"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:id="@+id/levelRewardCoinsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+25 COINS"
+                android:textColor="@color/accent_gold"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"/>
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnNextLevel"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:text="Next Level  ➔"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:background="@drawable/btn_gradient_classic"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnReplayLevel"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="Replay 🔄"
+                    android:textColor="@color/white"
+                    android:background="@drawable/card_surface_bg"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginEnd="6dp"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnHomeFromLevel"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="Home 🏠"
+                    android:textColor="@color/white"
+                    android:background="@drawable/card_surface_bg"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="6dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

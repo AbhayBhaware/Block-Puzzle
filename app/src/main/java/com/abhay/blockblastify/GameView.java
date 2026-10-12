@@ -89,6 +89,25 @@ public class GameView extends View {
             {{0, 1, 1}, {1, 1, 0}},
     };
 
+    private final int[][][] hardShapes = {
+            {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}}, // 3x3 square
+            {{1, 1, 1, 1}},                     // 4-bar horizontal
+            {{1}, {1}, {1}, {1}},               // 4-bar vertical
+            {{1, 1, 1, 1, 1}},                  // 5-bar horizontal
+            {{1}, {1}, {1}, {1}, {1}},          // 5-bar vertical
+            {{1, 1, 1}, {1, 0, 0}, {1, 0, 0}},  // Large corner
+            {{1, 1, 1}, {0, 0, 1}, {0, 0, 1}},  // Large corner
+            {{1, 0, 0}, {1, 0, 0}, {1, 1, 1}},  // Large corner
+            {{0, 0, 1}, {0, 0, 1}, {1, 1, 1}},  // Large corner
+            {{0, 1, 0}, {1, 1, 1}, {0, 1, 0}},  // Plus / cross
+            {{1, 0, 1}, {1, 1, 1}},             // U-shape
+    };
+
+    public static final int COLOR_OBSTACLE = Color.parseColor("#78909C");
+    private boolean isLevelMode = false;
+    private int currentLevel = 1;
+    private int levelObstacles = 0;
+
     private final int[] colors = {
             Color.parseColor("#FF5252"), // Bright Red
             Color.parseColor("#448AFF"), // Bright Blue
@@ -583,23 +602,136 @@ public class GameView extends View {
             return easyShapes[(int)(Math.random() * 3)];
         }
 
+        if (isLevelMode) {
+            if (currentLevel <= 2) {
+                return easyShapes[(int)(Math.random() * easyShapes.length)];
+            } else if (currentLevel <= 5) {
+                if (Math.random() < 0.6) {
+                    return easyShapes[(int)(Math.random() * easyShapes.length)];
+                } else {
+                    return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+                }
+            } else if (currentLevel <= 9) {
+                double r = Math.random();
+                if (r < 0.4) {
+                    return easyShapes[(int)(Math.random() * easyShapes.length)];
+                } else if (r < 0.8) {
+                    return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+                } else {
+                    return hardShapes[(int)(Math.random() * hardShapes.length)];
+                }
+            } else {
+                double r = Math.random();
+                if (r < 0.25) {
+                    return easyShapes[(int)(Math.random() * easyShapes.length)];
+                } else if (r < 0.65) {
+                    return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+                } else {
+                    return hardShapes[(int)(Math.random() * hardShapes.length)];
+                }
+            }
+        }
+
+        // Classic mode
         if (score < 1000) {
             return easyShapes[(int)(Math.random() * easyShapes.length)];
         }
 
-        if (score < 1500) {
-            if (Math.random() < 0.7) {
+        if (score < 2000) {
+            if (Math.random() < 0.65) {
                 return easyShapes[(int)(Math.random() * easyShapes.length)];
             } else {
                 return mediumShapes[(int)(Math.random() * mediumShapes.length)];
             }
         }
 
-        if (Math.random() < 0.5) {
-            return easyShapes[(int)(Math.random() * easyShapes.length)];
-        } else {
-            return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+        if (score < 3500) {
+            double r = Math.random();
+            if (r < 0.35) {
+                return easyShapes[(int)(Math.random() * easyShapes.length)];
+            } else if (r < 0.80) {
+                return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+            } else {
+                return hardShapes[(int)(Math.random() * hardShapes.length)];
+            }
         }
+
+        double r = Math.random();
+        if (r < 0.25) {
+            return easyShapes[(int)(Math.random() * easyShapes.length)];
+        } else if (r < 0.60) {
+            return mediumShapes[(int)(Math.random() * mediumShapes.length)];
+        } else {
+            return hardShapes[(int)(Math.random() * hardShapes.length)];
+        }
+    }
+
+    public void initLevel(int level, int obstacleCount) {
+        this.isLevelMode = true;
+        this.currentLevel = level;
+        this.levelObstacles = obstacleCount;
+        resetGame();
+    }
+
+    public void setLevelMode(boolean levelMode, int level) {
+        this.isLevelMode = levelMode;
+        this.currentLevel = level;
+    }
+
+    public boolean isLevelMode() {
+        return isLevelMode;
+    }
+
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+        if (scoreListener != null) {
+            scoreListener.onScoreChanged(score);
+        }
+    }
+
+    private void placeObstacles(int count) {
+        if (count <= 0) return;
+        java.util.Random rand = new java.util.Random(currentLevel * 31L);
+        int placed = 0;
+        int attempts = 0;
+        while (placed < count && attempts < 100) {
+            attempts++;
+            int r = rand.nextInt(rows);
+            int c = rand.nextInt(cols);
+            if (grid[r][c] == EMPTY) {
+                grid[r][c] = COLOR_OBSTACLE;
+                placed++;
+            }
+        }
+    }
+
+    public void resetGame() {
+        isGameOver = false;
+        score = 0;
+        comboCount = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                grid[i][j] = EMPTY;
+            }
+        }
+        if (isLevelMode && levelObstacles > 0) {
+            placeObstacles(levelObstacles);
+        }
+        if (scoreListener != null) {
+            scoreListener.onScoreChanged(0);
+        }
+        if (cellSize > 0) {
+            generateBlocks();
+        }
+        invalidate();
     }
 
     private boolean isTouchInsideBlock(MotionEvent e, com.abhay.blockblastify.Block block) {
@@ -840,6 +972,10 @@ public class GameView extends View {
         boardRadius = cellSize * 0.15f;
 
         floatingTextPaint.setTextSize(cellSize * 0.8f);
+
+        if (isLevelMode && levelObstacles > 0 && countEmptyCells() == rows * cols) {
+            placeObstacles(levelObstacles);
+        }
 
         generateBlocks();
     }

@@ -3,17 +3,30 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Primary Game Colors -->
-    <color name="game_bg_start">#1A237E</color>
-    <color name="game_bg_end">#121858</color>
-    <color name="card_bg">#283593</color>
+    <!-- Primary Game Colors - Modern Dark Minimal -->
+    <color name="game_bg_start">#0D1322</color>
+    <color name="game_bg_end">#080C16</color>
+    <color name="card_bg">#141C2E</color>
+    <color name="card_bg_elevated">#1A243B</color>
+    <color name="card_border">#23314D</color>
+    <color name="card_bg_user">#162846</color>
     <color name="accent_neon">#00E5FF</color>
+    <color name="accent_gold">#FFD54F</color>
+    <color name="accent_green">#00E676</color>
+    <color name="accent_orange">#FF9100</color>
+    <color name="accent_red">#FF5252</color>
+    <color name="accent_purple">#B388FF</color>
 
-    <!-- Block Colors (Modern Palette) -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_muted">#64748B</color>
+
+    <!-- Block Colors (Modern Vibrant Minimal Palette) -->
     <color name="block_red">#FF5252</color>
     <color name="block_blue">#448AFF</color>
-    <color name="block_green">#69F0AE</color>
-    <color name="block_orange">#FFAB40</color>
+    <color name="block_green">#00E676</color>
+    <color name="block_orange">#FF9100</color>
     <color name="block_purple">#E040FB</color>
-    <color name="block_cyan">#18FFFF</color>
+    <color name="block_cyan">#00E5FF</color>
+    <color name="block_obstacle">#78909C</color>
 </resources>

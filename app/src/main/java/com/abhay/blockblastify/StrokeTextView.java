@@ -10,18 +10,39 @@ public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView 
 
     private int strokeColor = Color.BLACK;
     private float strokeWidth = 6f;
+    private int fillColor = Color.CYAN;
 
     public StrokeTextView(Context context) {
         super(context);
+        init();
     }
 
     public StrokeTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+    }
+
+    private void init() {
+        fillColor = getCurrentTextColor();
+    }
+
+    public void setStrokeColor(int color) {
+        this.strokeColor = color;
+        invalidate();
+    }
+
+    public void setStrokeWidth(float width) {
+        this.strokeWidth = width;
+        invalidate();
+    }
+
+    public void setFillColor(int color) {
+        this.fillColor = color;
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-
         Paint paint = getPaint();
 
         paint.setStyle(Paint.Style.STROKE);
@@ -30,7 +51,7 @@ public class StrokeTextView extends androidx.appcompat.widget.AppCompatTextView 
         super.onDraw(canvas);
 
         paint.setStyle(Paint.Style.FILL);
-        setTextColor(Color.CYAN);
+        setTextColor(fillColor);
         super.onDraw(canvas);
     }
 }
